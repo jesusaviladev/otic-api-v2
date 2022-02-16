@@ -1,22 +1,28 @@
 const userModel = require('../models/users.model.js');
+const { Op } = require('sequelize');
 const hashPassword = require('../utils/hashPassword');
 
-const findUsers = async () => {
+const findUsers = async (cursor, queryLimit) => {
 
-	const users = await userModel.findAll();
+	const users = await userModel.findAll({
+		where: {
+			id: {
+				[Op.gt]: cursor,
+			},
+		},
+		limit: queryLimit
+	});
 
 	return users;
 };
 
 const findUserById = async (id) => {
-
 	const user = await userModel.findOne({ where: { id: id } });
 
 	return user;
 };
 
 const addUser = async (userData) => {
-	
 	const { username, password, name, surname, ci, telephone, email, role } =
 		userData;
 
@@ -39,32 +45,30 @@ const addUser = async (userData) => {
 };
 
 const editUser = async (id, data) => {
+	const { password } = data;
 
-	const { password } = data
-
-	if(password){
+	if (password) {
 		const hashedPassword = await hashPassword(password);
-		data.password = hashedPassword
+		data.password = hashedPassword;
 	}
 
 	const editedUser = await userModel.update(data, {
-		where: { id: id }
-	})
+		where: { id: id },
+	});
 
-	return editedUser
-}
+	return editedUser;
+};
 
 const deleteUser = async (id) => {
+	const user = await userModel.destroy({ where: { id: id } });
 
-	const user = await userModel.destroy({ where: { id: id }});
-
-	return Boolean(user)
-}
+	return Boolean(user);
+};
 
 module.exports = {
 	findUsers,
 	findUserById,
 	addUser,
 	editUser,
-	deleteUser
-}
+	deleteUser,
+};

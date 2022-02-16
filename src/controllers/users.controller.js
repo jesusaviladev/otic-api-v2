@@ -1,13 +1,28 @@
 const { findUsers, findUserById, addUser, editUser, deleteUser } = require('../services/users.services.js');
 const usersController = {};
+const getPagination = require('../utils/getPagination.js')
 
 usersController.getUsers = async (request, response, next) => {
 
+	const { since_id = 0, limit = 10 } = request.query
+	const { cursor, queryLimit } = getPagination(since_id, limit)
+
 	try {
-		const users = await findUsers();
+
+		const users = await findUsers(cursor, queryLimit);
+		
+		let nextCursor = null
+
+		if(users.length > 0 && users.length > limit){
+			users.pop()
+			nextCursor = `http://localhost:3000/api/users/?since_id=${users[users.length - 1 ].id}&limit=${limit}`
+		}
 
 		return response.status(200).json({
-			users
+			users,
+			pagination: {
+				nextPage: nextCursor,
+			}
 		});
 
 	} catch (error) {
@@ -84,7 +99,9 @@ usersController.deleteUser = async (request, response, next) => {
 				status: 'User not found',
 			});
 
-		return response.status(204).end();
+		return response.status(200).json({
+			message: 'Successfully deleted user'
+		});
 
 	} catch (error){
 		next(error)
