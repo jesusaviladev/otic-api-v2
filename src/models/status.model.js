@@ -3,8 +3,8 @@ const { db } = require('../services/connection.js');
 
 const options = { timestamps: false };
 
-const Role = db.define(
-	'roles',
+const Status = db.define(
+	'status',
 	{
 		id: {
 			allowNull: false,
@@ -12,8 +12,8 @@ const Role = db.define(
 			primaryKey: true,
 			type: DataTypes.INTEGER,
 		},
-		role: {
-			type: DataTypes.STRING(10),
+		description: {
+			type: DataTypes.STRING(20),
 			allowNull: false,
 			unique: true
 		},
@@ -21,4 +21,4 @@ const Role = db.define(
 	options
 );
 
-module.exports = Role;
+module.exports = Status;

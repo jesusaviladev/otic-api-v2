@@ -166,8 +166,30 @@ const validatePagination = [
 	}
 ]
 
+const validateLogin = [
+	check('username')
+		.exists().notEmpty().isString().isAlphanumeric().trim(),
+	check('password')
+		.exists().notEmpty().isString().trim(),
+	(request, response, next) => {
+
+		const errors = validationResult(request);
+		if (!errors.isEmpty()) {
+			return response.status(400).json({
+				error: 'Bad request, missing data',
+			});
+		}
+
+		const matched = matchedData(request);
+		request.query = matched;
+		
+		next();
+	}
+]
+
 module.exports = {
 	validateUser,
 	validateEditedUser,
-	validatePagination
+	validatePagination,
+	validateLogin
 };

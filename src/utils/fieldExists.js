@@ -1,7 +1,7 @@
-const userModel = require('../models/users.model.js');
+const User = require('../models/users.model.js');
 
 const fieldExists = async (field, value) => {
-	const result = await userModel.count({
+	const result = await User.count({
 		where: {
 			[field]: value,
 		},

@@ -21,7 +21,7 @@ usersController.getUsers = async (request, response, next) => {
 		return response.status(200).json({
 			users,
 			pagination: {
-				nextPage: nextCursor,
+				nextPage: nextCursor
 			}
 		});
 

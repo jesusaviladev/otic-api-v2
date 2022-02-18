@@ -1,5 +1,5 @@
 const { db } = require('../services/connection.js');
-const createDefaultRoles = require('./createDefaultRoles');
+const { createDefaultRoles, createDefaultStatus } = require('./defaultConfig.js');
 
 const checkDBConnection = () => {
 	db.authenticate()
@@ -8,6 +8,7 @@ const checkDBConnection = () => {
 			await db.sync();
 			console.log('All tables synced');
 			await createDefaultRoles();
+			await createDefaultStatus();
 			console.log('Database waiting for queries...')
 		})
 		.catch(async (error) => {

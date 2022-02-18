@@ -23,6 +23,7 @@ process.on('beforeExit', async code => {
 })
 
 process.on('uncaughtException', (err) => {
+  console.log(err)
   console.error(`Uncaught Exception: ${err.message}`)
   process.exit(1)
 })
