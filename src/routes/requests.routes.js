@@ -1,23 +1,20 @@
 const requestsRouter = require('express').Router();
+const {
+	getRequests,
+	getRequestsById,
+	createRequest,
+	editRequest,
+	deleteRequest,
+} = require('../controllers/requests.controller.js');
 
-requestsRouter.get('/', (request, response) => {
-	response.send('get request');
-});
+requestsRouter.get('/', getRequests);
 
-requestsRouter.get('/:id', (request, response) => {
-	response.send('get request by id');
-});
+requestsRouter.get('/:id', getRequestsById);
 
-requestsRouter.post('/', (request, response) => {
-	response.send('create request');
-});
+requestsRouter.post('/', createRequest);
 
-requestsRouter.put('/:id', (request, response) => {
-	response.send('edit request');
-});
+requestsRouter.patch('/:id', editRequest);
 
-requestsRouter.delete('/:id', (request, response) => {
-	response.send('delete request');
-});
+requestsRouter.delete('/:id', deleteRequest);
 
 module.exports = requestsRouter;

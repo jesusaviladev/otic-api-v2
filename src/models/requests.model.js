@@ -2,8 +2,7 @@ const { DataTypes } = require('sequelize');
 const { db } = require('../services/connection.js');
 const User = require('./users.model.js');
 const Status = require('./status.model.js');
-
-const options = { timestamps: false };
+const Device = require('./device.model.js')
 
 const Request = db.define('requests', {
 	id: {
@@ -25,7 +24,6 @@ const Request = db.define('requests', {
 Request.belongsTo(User, {
 	foreignKey: {
 		name: 'user_id',
-		allowNull: false,
 		onDelete: 'RESTRICT',
 		onUpdate: 'RESTRICT',
 	},
@@ -34,6 +32,15 @@ Request.belongsTo(User, {
 Request.belongsTo(Status, {
 	foreignKey: {
 		name: 'status_id',
+		allowNull: false,
+		onDelete: 'RESTRICT',
+		onUpdate: 'RESTRICT',
+	},
+});
+
+Request.belongsTo(Device, {
+	foreignKey: {
+		name: 'serial_id',
 		allowNull: false,
 		onDelete: 'RESTRICT',
 		onUpdate: 'RESTRICT',

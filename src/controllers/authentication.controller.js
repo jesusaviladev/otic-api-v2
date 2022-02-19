@@ -8,29 +8,31 @@ authController.signup = (request, response) => {
 };
 
 authController.login = async (request, response, next) => {
-
 	const { username, password } = request.body;
 
 	try {
 		const user = await User.findOne({ where: { username: username } });
 
-		if (!user || !(await bcrypt.compare(password, user.password))) {
+		const passwordMatch = user === null
+				? false
+				: await bcrypt.compare(password, user.password);
+
+		if (!user || !passwordMatch) {
 			return response.status(400).json({
-				error: 'Username or password are invalid'
+				error: 'Username or password are invalid',
 			});
 		} else {
-
 			const signedUser = {
 				id: user.id,
 				username: user.username,
-				role: user.role_id
-			}
-			
-			const token = jwt.sign(signedUser, process.env.SECRET)
+				role: user.role_id,
+			};
+
+			const token = jwt.sign(signedUser, process.env.SECRET);
 
 			return response.status(200).json({
 				signedUser,
-				token
+				token,
 			});
 		}
 	} catch (error) {

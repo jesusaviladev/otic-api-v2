@@ -15,7 +15,7 @@ const Role = db.define(
 		role: {
 			type: DataTypes.STRING(10),
 			allowNull: false,
-			unique: true
+			unique: true,
 		},
 	},
 	options

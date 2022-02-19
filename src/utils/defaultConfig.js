@@ -1,8 +1,5 @@
 const Role = require('../models/roles.model.js');
 const Status = require('../models/status.model.js');
-const Device = require('../models/device.model.js');
-const Request = require('../models/requests.model.js');
-const Reports = require('../models/reports.model.js');
 
 const createDefaultRoles = async () => {
 	try {

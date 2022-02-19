@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const { db } = require('../services/connection.js');
-const Request = require('./requests.model.js');
 
 const Device = db.define('devices', {
 	serial: {
@@ -17,13 +16,6 @@ const Device = db.define('devices', {
 		type: DataTypes.STRING,
 		allowNull: false,
 	},
-});
-
-Device.hasMany(Request, {
-	foreignKey: 'serial_id',
-	allowNull: false,
-	onDelete: 'RESTRICT',
-	onUpdate: 'RESTRICT',
 });
 
 module.exports = Device;

@@ -15,7 +15,7 @@ const Status = db.define(
 		description: {
 			type: DataTypes.STRING(20),
 			allowNull: false,
-			unique: true
+			unique: true,
 		},
 	},
 	options

@@ -12,7 +12,7 @@ const User = db.define('users', {
 	username: {
 		type: DataTypes.STRING,
 		allowNull: false,
-		unique: true
+		unique: true,
 	},
 	password: {
 		type: DataTypes.STRING,
@@ -29,7 +29,7 @@ const User = db.define('users', {
 	ci: {
 		type: DataTypes.STRING(100),
 		allowNull: false,
-		unique: true
+		unique: true,
 	},
 	telephone: {
 		type: DataTypes.STRING(25),
@@ -41,8 +41,8 @@ const User = db.define('users', {
 		validate: {
 			isEmail: true,
 		},
-		unique: true
-	}
+		unique: true,
+	},
 });
 
 User.belongsTo(Role, {
@@ -50,8 +50,8 @@ User.belongsTo(Role, {
 		name: 'role_id',
 		allowNull: false,
 		onDelete: 'RESTRICT',
-		onUpdate: 'RESTRICT'
-	}
-})
+		onUpdate: 'RESTRICT',
+	},
+});
 
 module.exports = User;
