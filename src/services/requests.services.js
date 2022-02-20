@@ -1,5 +1,5 @@
-const Request = require('../models/requests.model.js')
 const Device = require('../models/device.model.js')
+const Request = require('../models/requests.model.js')
 const { db } = require('../services/connection.js')
 
 const findRequests = async () => {

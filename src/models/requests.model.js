@@ -4,6 +4,8 @@ const User = require('./users.model.js');
 const Status = require('./status.model.js');
 const Device = require('./device.model.js')
 
+const options = { timestamps: false };
+
 const Request = db.define('requests', {
 	id: {
 		allowNull: false,
@@ -19,7 +21,7 @@ const Request = db.define('requests', {
 		allowNull: false,
 		type: DataTypes.TEXT,
 	},
-});
+}, options);
 
 Request.belongsTo(User, {
 	foreignKey: {

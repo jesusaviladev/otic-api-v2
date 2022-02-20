@@ -10,7 +10,7 @@ const {
 const db = new Sequelize(dbName, dbUser, dbPassword, {
   host: host,
   dialect: DBEngine,
-  //logging: false, //activar o desactivar logging por consula de cada query
+  logging: false, //activar o desactivar logging por consula de cada query
 });
 
 process.on('beforeExit', async (code) => {

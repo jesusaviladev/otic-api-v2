@@ -1,23 +1,15 @@
 const reportsRouter = require('express').Router();
+const { getReports, getReportById, createReport, editReport, deleteReport }
+= require('../controllers/reports.controller.js')
 
-reportsRouter.get('/', (request, response) => {
-	response.send('get report');
-});
+reportsRouter.get('/', getReports);
 
-reportsRouter.get('/:id', (request, response) => {
-	response.send('get report by id');
-});
+reportsRouter.get('/:id', getReportById);
 
-reportsRouter.post('/', (request, response) => {
-	response.send('create report');
-});
+reportsRouter.post('/', createReport);
 
-reportsRouter.put('/:id', (request, response) => {
-	response.send('edit report');
-});
+reportsRouter.patch('/:id', editReport);
 
-reportsRouter.delete('/:id', (request, response) => {
-	response.send('delete report');
-});
+reportsRouter.delete('/:id', deleteReport);
 
 module.exports = reportsRouter;

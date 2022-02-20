@@ -2,7 +2,7 @@ const { db } = require('../services/connection.js');
 const { createDefaultRoles, createDefaultStatus } = require('./defaultConfig.js');
 
 const checkDBConnection = () => {
-	db.authenticate()
+	return db.authenticate()
 		.then(async () => {
 			console.log('Succesfully connected to Database');
 			await db.sync();

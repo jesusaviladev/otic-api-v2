@@ -1,3 +1,4 @@
+const requestsController = {};
 const {
 	findRequests,
 	findRequestById,
@@ -5,8 +6,6 @@ const {
 	editRequest,
 	deleteRequest,
 } = require('../services/requests.services.js');
-
-const requestsController = {};
 
 requestsController.getRequests = async (request, response, next) => {
 	try {
