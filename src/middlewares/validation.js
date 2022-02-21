@@ -1,5 +1,6 @@
 const { check, validationResult, matchedData } = require('express-validator');
 const { fieldExists } = require('../utils/fieldExists');
+const { Device } = require('../models/device.model.js')
 
 const validateUser = [
 	check('username', 'Must enter a valid username')
@@ -181,15 +182,75 @@ const validateLogin = [
 		}
 
 		const matched = matchedData(request);
-		request.query = matched;
-		
+		request.body = matched;
+
 		next();
 	}
 ]
+
+const validateRequest = [
+	check('description', 'Must be a valid string')
+		.exists().notEmpty().isString().trim(),
+	check('userId', 'Must be a valid id')
+		.optional().notEmpty().trim().custom(async (value) => {
+			if (!await fieldExists('id', value)) {
+				return Promise.reject('Invalid ID, user does not exists');
+			}
+		}),
+	check('device', 'Must be an object')
+		.exists().isObject(),
+	check('device.exists', 'Must be a boolean value')
+		.exists().notEmpty().isBoolean({ loose: false }),
+	check('device.serial', 'Must be a valid serial id')
+		.exists().notEmpty().isString().trim(),
+	check('device.type', 'Must be a valid string')
+		.exists().notEmpty().isString().trim(),
+	(request, response, next) => {
+
+		const errors = validationResult(request);
+		if (!errors.isEmpty()) {
+			return response.status(400).json({ errors: errors.array() });
+		}
+
+		const matched = matchedData(request);
+
+		request.body = matched;
+
+		next();
+	}
+]
+
+const validateEditedRequest = [
+	check('description')
+	.optional().notEmpty().isString().trim(),
+	check('userId', 'Must be a valid id')
+		.optional().notEmpty().trim().custom(async (value) => {
+			if (!await fieldExists('id', value)) {
+				return Promise.reject('Invalid ID, user does not exists');
+			}
+		}),
+	check('status', 'Status can only be setted to completed')
+		.optional().notEmpty().equals("3").trim(),
+	(request, response, next) => {
+
+		const errors = validationResult(request);
+		if (!errors.isEmpty()) {
+			return response.status(400).json({ errors: errors.array() });
+		}
+
+		const matched = matchedData(request);
+
+		request.body = matched;
+		
+		next();
+	}
+];
 
 module.exports = {
 	validateUser,
 	validateEditedUser,
 	validatePagination,
-	validateLogin
+	validateLogin,
+	validateRequest,
+	validateEditedRequest
 };

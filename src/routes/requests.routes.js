@@ -6,14 +6,15 @@ const {
 	editRequest,
 	deleteRequest,
 } = require('../controllers/requests.controller.js');
+const { validateRequest, validateEditedRequest } = require('../middlewares/validation.js')
 
 requestsRouter.get('/', getRequests);
 
 requestsRouter.get('/:id', getRequestsById);
 
-requestsRouter.post('/', createRequest);
+requestsRouter.post('/', validateRequest, createRequest);
 
-requestsRouter.patch('/:id', editRequest);
+requestsRouter.patch('/:id', validateEditedRequest, editRequest);
 
 requestsRouter.delete('/:id', deleteRequest);
 

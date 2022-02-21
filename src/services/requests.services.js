@@ -48,14 +48,14 @@ const addRequest = async (data) => {
 			await t.commit()
 
 			return {
-				createdDevice,
-				createdRequest
+				device: createdDevice,
+				request: createdRequest
 			}
 
 		} catch (error){
-			console.log(error)
-			console.log('Aqui estoy, no me cree')
+
 			await t.rollback();
+			throw new Error(error)
 		}
 
 	} else {
@@ -72,6 +72,11 @@ const addRequest = async (data) => {
 }
 
 const editRequest = async (id, data) => {
+	const { status } = data
+
+	if(status){
+		data.status_id = status
+	}
 
 	const editedRequest = await Request.update(data, {
 		where: { id: id }

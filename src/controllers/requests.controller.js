@@ -44,7 +44,10 @@ requestsController.createRequest = async (request, response, next) => {
 	try {
 		const request = await addRequest(data);
 
-		return response.status(200).json({ request });
+		return response.status(200).json({
+			request
+		});
+
 	} catch (error) {
 		next(error);
 	}
