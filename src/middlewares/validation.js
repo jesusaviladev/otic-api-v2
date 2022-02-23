@@ -1,6 +1,6 @@
 const { check, validationResult, matchedData } = require('express-validator');
 const { fieldExists } = require('../utils/fieldExists');
-const { Device } = require('../models/device.model.js')
+const Device = require('../models/device.model.js')
 
 const validateUser = [
 	check('username', 'Must enter a valid username')
@@ -25,6 +25,7 @@ const validateUser = [
 		.exists()
 		.notEmpty()
 		.isString()
+		.isAlpha('es-ES', {ignore: '\s'})
 		.toLowerCase()
 		.trim()
 		.escape(),
@@ -32,6 +33,7 @@ const validateUser = [
 		.exists()
 		.notEmpty()
 		.isString()
+		.isAlpha('es-ES', {ignore: '\s'})
 		.toLowerCase()
 		.trim()
 		.escape(),
@@ -60,7 +62,11 @@ const validateUser = [
 				return Promise.reject('Email already exists');
 			}
 		}),
-	check('role', 'Must enter an user role').exists().notEmpty(),
+	check('role', 'Must enter an user role')
+	.exists()
+	.notEmpty()
+	.isNumeric()
+	.matches(/^[1-2]$/),
 
 	(request, response, next) => {
 		const errors = validationResult(request);
@@ -99,6 +105,7 @@ const validateEditedUser = [
 		.optional()
 		.notEmpty()
 		.isString()
+		.isAlpha('es-ES', {ignore: '\s'})
 		.toLowerCase()
 		.trim()
 		.escape(),
@@ -106,6 +113,7 @@ const validateEditedUser = [
 		.optional()
 		.notEmpty()
 		.isString()
+		.isAlpha('es-ES', {ignore: '\s'})
 		.toLowerCase()
 		.trim()
 		.escape(),
@@ -177,7 +185,7 @@ const validateLogin = [
 		const errors = validationResult(request);
 		if (!errors.isEmpty()) {
 			return response.status(400).json({
-				error: 'Bad request, missing data',
+				error: 'Must submit a valid username and password',
 			});
 		}
 
@@ -190,8 +198,8 @@ const validateLogin = [
 
 const validateRequest = [
 	check('description', 'Must be a valid string')
-		.exists().notEmpty().isString().trim(),
-	check('userId', 'Must be a valid id')
+		.exists().notEmpty().isString().trim().escape(),
+	check('user_id', 'Must be a valid id')
 		.optional().notEmpty().trim().custom(async (value) => {
 			if (!await fieldExists('id', value)) {
 				return Promise.reject('Invalid ID, user does not exists');
@@ -222,8 +230,8 @@ const validateRequest = [
 
 const validateEditedRequest = [
 	check('description')
-	.optional().notEmpty().isString().trim(),
-	check('userId', 'Must be a valid id')
+	.optional().notEmpty().isString().trim().escape(),
+	check('user_id', 'Must be a valid id')
 		.optional().notEmpty().trim().custom(async (value) => {
 			if (!await fieldExists('id', value)) {
 				return Promise.reject('Invalid ID, user does not exists');
@@ -246,11 +254,57 @@ const validateEditedRequest = [
 	}
 ];
 
+const validateReport = [
+	check('comment')
+		.exists().notEmpty().isString().trim().escape(),
+	check('user_id')
+		.exists().notEmpty().trim().custom(async (value) => {
+			if (!await fieldExists('id', value)) {
+				return Promise.reject('Invalid ID, user does not exists');
+			}
+		}),
+	check('request_id')
+		.exists().notEmpty().trim(),
+	(request, response, next) => {
+
+		const errors = validationResult(request);
+		if (!errors.isEmpty()) {
+			return response.status(400).json({ errors: errors.array() });
+		}
+
+		const matched = matchedData(request);
+
+		request.body = matched;
+		
+		next();
+	}
+]
+
+const validateEditedReport = [
+	check('comment')
+		.optional().notEmpty().isString().trim().escape(),
+	(request, response, next) => {
+
+		const errors = validationResult(request);
+		if (!errors.isEmpty()) {
+			return response.status(400).json({ errors: errors.array() });
+		}
+
+		const matched = matchedData(request);
+
+		request.body = matched;
+		
+		next();
+	}
+]
+
 module.exports = {
 	validateUser,
 	validateEditedUser,
 	validatePagination,
 	validateLogin,
 	validateRequest,
-	validateEditedRequest
+	validateEditedRequest,
+	validateReport,
+	validateEditedReport
 };

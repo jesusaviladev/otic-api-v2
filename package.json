@@ -1,8 +1,8 @@
 {
   "name": "otic-api-v2",
-  "version": "2.0.0",
+  "version": "1.0.0",
   "description": "REST API for OTIC project",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
     "test": "cross-env NODE_ENV=test jest --verbose --silent",
     "test:watch": "npm run test -- --watch",

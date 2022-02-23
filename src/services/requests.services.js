@@ -17,9 +17,9 @@ const findRequestById = async (id) => {
 
 const addRequest = async (data) => {
 
-	const { description, device, userId = null } = data
+	const { description, device, user_id = null } = data
 
-	const status = userId ? 2 : 1
+	const status = user_id ? 2 : 1
 
 	if(!device.exists){ //flag para saber si existe el equipo en BD
 
@@ -38,7 +38,7 @@ const addRequest = async (data) => {
 			const createdRequest = await Request.create({
 				date: new Date().toISOString(),
 				description,
-				user_id: userId,
+				user_id,
 				status_id: status,
 				serial_id: createdDevice.serial
 			}, {
@@ -62,7 +62,7 @@ const addRequest = async (data) => {
 		const createdRequest = Request.create({
 				date: new Date().toISOString(),
 				description,
-				user_id: userId,
+				user_id,
 				status_id: status,
 				serial_id: device.serial
 		})

@@ -1,4 +1,3 @@
-const requestsController = {};
 const {
 	findRequests,
 	findRequestById,
@@ -6,6 +5,7 @@ const {
 	editRequest,
 	deleteRequest,
 } = require('../services/requests.services.js');
+const requestsController = {};
 
 requestsController.getRequests = async (request, response, next) => {
 	try {
@@ -86,7 +86,9 @@ requestsController.deleteRequest = async (request, response, next) => {
 			});
 		}
 
-		return response.status(200).json(deletedRequest);
+		return response.status(200).json({
+			message: 'Successfully deleted request'
+		});
 	} catch (error) {
 		next(error);
 	}
