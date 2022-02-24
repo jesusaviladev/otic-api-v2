@@ -1,55 +1,71 @@
-const Report = require('../models/reports.model.js')
-const Request = require('../models/requests.model.js')
+const Report = require('../models/reports.model.js');
+const Request = require('../models/requests.model.js');
+const { db } = require('../services/connection.js');
 
 const findReports = async () => {
-	const reports = await Report.findAll()
+	const reports = await Report.findAll();
 
-	return reports
-}
+	return reports;
+};
 
 const findReportById = async (id) => {
-	const report = await Report.findOne({ where: { id: id }})
+	const report = await Report.findOne({ where: { id: id } });
 
-	return report
-}
+	return report;
+};
 
 const addReport = async (data) => {
 
-	data.date = new Date().toISOString()
+	const t = await db.transaction()
 
-	const report = await Report.create(data)
+	try {
 
-	const reportedRequest = await Request.findOne({ where : { id: data.request_id }})
+		data.date = new Date().toISOString();
 
-	reportedRequest.status_id = 3
+		const reportedRequest = await Request.findOne({
+			where: { id: data.request_id },
+			transaction: t
+		});
 
-	await reportedRequest.save()
+		data.user_id = reportedRequest.user_id
 
-	console.log(reportedRequest)
+		const report = await Report.create(data, {
+			transaction: t
+		});
 
+		reportedRequest.status_id = 3;
 
+		await reportedRequest.save({
+			transaction: t
+		});
 
-	return report
-}
+		await t.commit()
+
+		return report;
+
+	} catch (error) {
+
+			await t.rollback();
+			throw new Error(error)
+	}
+};
 
 const editReport = async (id, data) => {
+	const editedReport = await Report.update(data, { where: { id: id } });
 
-	const editedReport = await Report.update(data, { where: { id: id }})
-
-	return editedReport
-}
+	return editedReport;
+};
 
 const deleteReport = async (id) => {
+	const deletedReport = await Report.destroy({ where: { id: id } });
 
-	const deletedReport = await Report.destroy({ where: { id: id }})
-
-	return deletedReport
-}
+	return deletedReport;
+};
 
 module.exports = {
 	findReports,
 	findReportById,
 	addReport,
 	editReport,
-	deleteReport
-}
+	deleteReport,
+};

@@ -86,7 +86,7 @@ describe('usuarios', () => {
 				ci: 1112,
 				telephone: '04121588783',
 				email: 'jesus.com',
-				role: '2',
+				role: '45',
 			})
 		.expect(400)
 
@@ -103,7 +103,7 @@ describe('usuarios', () => {
 			password: 'blah456', //la contraseña debe ser mayor a 6 caracteres
 			ci: '26778126',
 			name: 'pepito',
-			surname: 'UPT 2',
+			surname: 'casas',
 			role: 1
 		})
 		.expect(200)
@@ -112,7 +112,7 @@ describe('usuarios', () => {
 
 		expect(editedUser.username).toBe('elchambas')
 		expect(editedUser.name).toBe('pepito')
-		expect(editedUser.surname).toBe('upt 2') //devuelve lowercase
+		expect(editedUser.surname).toBe('casas') //devuelve lowercase
 		expect(editedUser.role_id).toBe(2) //no se debe poder asignar un rol
 		expect(editedUser.ci).toBe('26778126')
 	})

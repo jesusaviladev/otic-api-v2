@@ -4,7 +4,7 @@ const User = require('./users.model.js');
 const Status = require('./status.model.js');
 const Device = require('./device.model.js')
 
-const options = { timestamps: false };
+const options = { createdAt: false };
 
 const Request = db.define('requests', {
 	id: {

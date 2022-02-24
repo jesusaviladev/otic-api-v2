@@ -3,6 +3,8 @@ const { db } = require('../services/connection.js');
 const User = require('./users.model.js');
 const Request = require('./requests.model.js');
 
+const options = { createdAt: false };
+
 const Report = db.define('reports', {
 	id: {
 		allowNull: false,
@@ -18,7 +20,7 @@ const Report = db.define('reports', {
 		allowNull: false,
 		type: DataTypes.TEXT,
 	},
-});
+}, options);
 
 Report.belongsTo(User, {
 	foreignKey: {

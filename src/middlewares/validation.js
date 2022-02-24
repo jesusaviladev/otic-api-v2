@@ -1,6 +1,7 @@
 const { check, validationResult, matchedData } = require('express-validator');
 const { fieldExists } = require('../utils/fieldExists');
-const Device = require('../models/device.model.js')
+const Device = require('../models/device.model.js');
+const Request = require('../models/requests.model.js')
 
 const validateUser = [
 	check('username', 'Must enter a valid username')
@@ -25,7 +26,7 @@ const validateUser = [
 		.exists()
 		.notEmpty()
 		.isString()
-		.isAlpha('es-ES', {ignore: '\s'})
+		.isAlpha('es-ES', { ignore: 's' })
 		.toLowerCase()
 		.trim()
 		.escape(),
@@ -33,7 +34,7 @@ const validateUser = [
 		.exists()
 		.notEmpty()
 		.isString()
-		.isAlpha('es-ES', {ignore: '\s'})
+		.isAlpha('es-ES', { ignore: 's' })
 		.toLowerCase()
 		.trim()
 		.escape(),
@@ -63,10 +64,10 @@ const validateUser = [
 			}
 		}),
 	check('role', 'Must enter an user role')
-	.exists()
-	.notEmpty()
-	.isNumeric()
-	.matches(/^[1-2]$/),
+		.exists()
+		.notEmpty()
+		.isNumeric()
+		.matches(/^[1-2]$/),
 
 	(request, response, next) => {
 		const errors = validationResult(request);
@@ -105,7 +106,7 @@ const validateEditedUser = [
 		.optional()
 		.notEmpty()
 		.isString()
-		.isAlpha('es-ES', {ignore: '\s'})
+		.isAlpha('es-ES', { ignore: 's' })
 		.toLowerCase()
 		.trim()
 		.escape(),
@@ -113,7 +114,7 @@ const validateEditedUser = [
 		.optional()
 		.notEmpty()
 		.isString()
-		.isAlpha('es-ES', {ignore: '\s'})
+		.isAlpha('es-ES', { ignore: 's' })
 		.toLowerCase()
 		.trim()
 		.escape(),
@@ -158,11 +159,15 @@ const validateEditedUser = [
 
 const validatePagination = [
 	check('since_id', 'Invalid parameter in request')
-		.optional().isNumeric().trim(),
+		.optional()
+		.isNumeric()
+		.trim(),
 	check('limit', 'Invalid parameter in request')
-		.optional().isNumeric().trim().matches(/^([1-9][0-9]?|100)$/),
+		.optional()
+		.isNumeric()
+		.trim()
+		.matches(/^([1-9][0-9]?|100)$/),
 	(request, response, next) => {
-
 		const errors = validationResult(request);
 		if (!errors.isEmpty()) {
 			return response.status(400).json({ errors: errors.array() });
@@ -170,18 +175,15 @@ const validatePagination = [
 
 		const matched = matchedData(request);
 		request.query = matched;
-		
+
 		next();
-	}
-]
+	},
+];
 
 const validateLogin = [
-	check('username')
-		.exists().notEmpty().isString().isAlphanumeric().trim(),
-	check('password')
-		.exists().notEmpty().isString().trim(),
+	check('username').exists().notEmpty().isString().isAlphanumeric().trim(),
+	check('password').exists().notEmpty().isString().trim(),
 	(request, response, next) => {
-
 		const errors = validationResult(request);
 		if (!errors.isEmpty()) {
 			return response.status(400).json({
@@ -193,28 +195,51 @@ const validateLogin = [
 		request.body = matched;
 
 		next();
-	}
-]
+	},
+];
 
 const validateRequest = [
 	check('description', 'Must be a valid string')
-		.exists().notEmpty().isString().trim().escape(),
+		.exists()
+		.notEmpty()
+		.isString()
+		.trim()
+		.escape(),
 	check('user_id', 'Must be a valid id')
-		.optional().notEmpty().trim().custom(async (value) => {
-			if (!await fieldExists('id', value)) {
+		.optional()
+		.notEmpty()
+		.trim()
+		.custom(async (value) => {
+			if (!(await fieldExists('id', value))) {
 				return Promise.reject('Invalid ID, user does not exists');
 			}
 		}),
-	check('device', 'Must be an object')
-		.exists().isObject(),
+	check('device', 'Must be an object').exists().isObject(),
 	check('device.exists', 'Must be a boolean value')
-		.exists().notEmpty().isBoolean({ loose: false }),
-	check('device.serial', 'Must be a valid serial id')
-		.exists().notEmpty().isString().trim(),
-	check('device.type', 'Must be a valid string')
-		.exists().notEmpty().isString().trim(),
-	(request, response, next) => {
+		.exists()
+		.notEmpty()
+		.isBoolean({ loose: false })
+		.custom(async (value, { req }) => {
+			if(value === true){
+				const device = await Device.findOne({ where: { serial: req.body.device.serial }})
 
+				if(!device){
+					return Promise.reject('Invalid ID, device does not exists')
+				}
+			}
+		})
+		,
+	check('device.serial', 'Must be a valid serial id')
+		.exists()
+		.notEmpty()
+		.isString()
+		.trim(),
+	check('device.type', 'Must be a valid string')
+		.exists()
+		.notEmpty()
+		.isString()
+		.trim(),
+	(request, response, next) => {
 		const errors = validationResult(request);
 		if (!errors.isEmpty()) {
 			return response.status(400).json({ errors: errors.array() });
@@ -225,22 +250,21 @@ const validateRequest = [
 		request.body = matched;
 
 		next();
-	}
-]
+	},
+];
 
 const validateEditedRequest = [
-	check('description')
-	.optional().notEmpty().isString().trim().escape(),
+	check('description').optional().notEmpty().isString().trim().escape(),
 	check('user_id', 'Must be a valid id')
-		.optional().notEmpty().trim().custom(async (value) => {
-			if (!await fieldExists('id', value)) {
+		.optional()
+		.notEmpty()
+		.trim()
+		.custom(async (value) => {
+			if (!(await fieldExists('id', value))) {
 				return Promise.reject('Invalid ID, user does not exists');
 			}
 		}),
-	check('status', 'Status can only be setted to completed')
-		.optional().notEmpty().equals("3").trim(),
 	(request, response, next) => {
-
 		const errors = validationResult(request);
 		if (!errors.isEmpty()) {
 			return response.status(400).json({ errors: errors.array() });
@@ -249,24 +273,25 @@ const validateEditedRequest = [
 		const matched = matchedData(request);
 
 		request.body = matched;
-		
+
 		next();
-	}
+	},
 ];
 
 const validateReport = [
-	check('comment')
-		.exists().notEmpty().isString().trim().escape(),
-	check('user_id')
-		.exists().notEmpty().trim().custom(async (value) => {
-			if (!await fieldExists('id', value)) {
-				return Promise.reject('Invalid ID, user does not exists');
-			}
-		}),
-	check('request_id')
-		.exists().notEmpty().trim(),
-	(request, response, next) => {
+	check('comment').exists().notEmpty().isString().trim().escape(),
+	check('request_id').exists().notEmpty().trim().custom(async (value) => {
+		const request = await Request.findOne({ where: { id: value }})
 
+		if(!request) {
+			return Promise.reject('Invalid ID, request does not exists')
+		}
+
+		if(!request.user_id){
+			return Promise.reject('Request must have an assigned user first')
+		}
+	}),
+	(request, response, next) => {
 		const errors = validationResult(request);
 		if (!errors.isEmpty()) {
 			return response.status(400).json({ errors: errors.array() });
@@ -275,16 +300,14 @@ const validateReport = [
 		const matched = matchedData(request);
 
 		request.body = matched;
-		
+
 		next();
-	}
-]
+	},
+];
 
 const validateEditedReport = [
-	check('comment')
-		.optional().notEmpty().isString().trim().escape(),
+	check('comment').optional().notEmpty().isString().trim().escape(),
 	(request, response, next) => {
-
 		const errors = validationResult(request);
 		if (!errors.isEmpty()) {
 			return response.status(400).json({ errors: errors.array() });
@@ -293,10 +316,10 @@ const validateEditedReport = [
 		const matched = matchedData(request);
 
 		request.body = matched;
-		
+
 		next();
-	}
-]
+	},
+];
 
 module.exports = {
 	validateUser,
@@ -306,5 +329,5 @@ module.exports = {
 	validateRequest,
 	validateEditedRequest,
 	validateReport,
-	validateEditedReport
+	validateEditedReport,
 };

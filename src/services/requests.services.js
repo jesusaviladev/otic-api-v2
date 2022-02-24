@@ -72,10 +72,11 @@ const addRequest = async (data) => {
 }
 
 const editRequest = async (id, data) => {
-	const { status } = data
 
-	if(status){
-		data.status_id = status
+	const { user_id } = data
+
+	if(user_id){
+		data.status_id = 2
 	}
 
 	const editedRequest = await Request.update(data, {
