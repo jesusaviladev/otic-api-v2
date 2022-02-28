@@ -7,15 +7,16 @@ const {
 	deleteRequest,
 } = require('../controllers/requests.controller.js');
 const { validateRequest, validateEditedRequest } = require('../middlewares/validation.js')
+const { verifyToken, checkAdmin } = require('../middlewares/auth.js')
 
-requestsRouter.get('/', getRequests);
+requestsRouter.get('/', verifyToken, checkAdmin, getRequests);
 
-requestsRouter.get('/:id', getRequestsById);
+requestsRouter.get('/:id', verifyToken, checkAdmin, getRequestsById);
 
-requestsRouter.post('/', validateRequest, createRequest);
+requestsRouter.post('/', verifyToken, checkAdmin, validateRequest, createRequest);
 
-requestsRouter.patch('/:id', validateEditedRequest, editRequest);
+requestsRouter.patch('/:id', verifyToken, checkAdmin, validateEditedRequest, editRequest);
 
-requestsRouter.delete('/:id', deleteRequest);
+requestsRouter.delete('/:id', verifyToken, checkAdmin, deleteRequest);
 
 module.exports = requestsRouter;
