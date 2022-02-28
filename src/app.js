@@ -5,9 +5,6 @@ require('./services/connection.js'); //Nos conectamos a la BD
 const checkDBConnection = require('./utils/checkDBConnection.js');
 const pkg = require('../package.json');
 
-//Verificamos conexion a la BD
-checkDBConnection();
-
 //importamos rutas
 const authRouter = require('./routes/authentication.routes.js');
 const usersRouter = require('./routes/users.routes.js');
@@ -53,14 +50,8 @@ app.use(notFound);
 //manejador de errores
 app.use(errorHandler);
 
-//iniciar el servidor
-
-const port = app.get('port');
-
-app.listen(port, () => {
-	console.log(`Server listening on port ${port}`);
-});
-
 module.exports = {
+	//exportamos para testing
 	app,
+	checkDBConnection
 };

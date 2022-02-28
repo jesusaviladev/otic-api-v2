@@ -1,23 +1,26 @@
-const userModel = require('../models/users.model.js');
+const User = require('../models/users.model.js');
 const { Op } = require('sequelize');
 const hashPassword = require('../utils/hashPassword');
 
 const findUsers = async (cursor, queryLimit) => {
-
-	const users = await userModel.findAll({
+	const users = await User.findAll({
 		where: {
 			id: {
 				[Op.gt]: cursor,
 			},
 		},
-		limit: queryLimit
+		limit: queryLimit,
+		attributes: { exclude: ['password'] },
 	});
 
 	return users;
 };
 
 const findUserById = async (id) => {
-	const user = await userModel.findOne({ where: { id: id } });
+	const user = await User.findOne({
+		where: { id: id },
+		attributes: { exclude: ['password'] },
+	});
 
 	return user;
 };
@@ -28,7 +31,7 @@ const addUser = async (userData) => {
 
 	const hashedPassword = await hashPassword(password);
 
-	const newUser = userModel.build({
+	const newUser = User.build({
 		username,
 		password: hashedPassword,
 		name,
@@ -36,7 +39,7 @@ const addUser = async (userData) => {
 		ci,
 		telephone,
 		email,
-		role,
+		role_id: role,
 	});
 
 	const savedUser = await newUser.save();
@@ -52,7 +55,7 @@ const editUser = async (id, data) => {
 		data.password = hashedPassword;
 	}
 
-	const editedUser = await userModel.update(data, {
+	const editedUser = await User.update(data, {
 		where: { id: id },
 	});
 
@@ -60,7 +63,7 @@ const editUser = async (id, data) => {
 };
 
 const deleteUser = async (id) => {
-	const user = await userModel.destroy({ where: { id: id } });
+	const user = await User.destroy({ where: { id: id } });
 
 	return Boolean(user);
 };

@@ -1,23 +1,22 @@
 const requestsRouter = require('express').Router();
+const {
+	getRequests,
+	getRequestsById,
+	createRequest,
+	editRequest,
+	deleteRequest,
+} = require('../controllers/requests.controller.js');
+const { validateRequest, validateEditedRequest } = require('../middlewares/validation.js')
+const { verifyToken, checkAdmin } = require('../middlewares/auth.js')
 
-requestsRouter.get('/', (request, response) => {
-	response.send('get request');
-});
+requestsRouter.get('/', verifyToken, checkAdmin, getRequests);
 
-requestsRouter.get('/:id', (request, response) => {
-	response.send('get request by id');
-});
+requestsRouter.get('/:id', verifyToken, checkAdmin, getRequestsById);
 
-requestsRouter.post('/', (request, response) => {
-	response.send('create request');
-});
+requestsRouter.post('/', verifyToken, checkAdmin, validateRequest, createRequest);
 
-requestsRouter.put('/:id', (request, response) => {
-	response.send('edit request');
-});
+requestsRouter.patch('/:id', verifyToken, checkAdmin, validateEditedRequest, editRequest);
 
-requestsRouter.delete('/:id', (request, response) => {
-	response.send('delete request');
-});
+requestsRouter.delete('/:id', verifyToken, checkAdmin, deleteRequest);
 
 module.exports = requestsRouter;

@@ -1,7 +1,8 @@
 const { DataTypes } = require('sequelize');
 const { db } = require('../services/connection.js');
+const Role = require('./roles.model.js');
 
-const userModel = db.define('users', {
+const User = db.define('users', {
 	id: {
 		allowNull: false,
 		autoIncrement: true,
@@ -11,6 +12,7 @@ const userModel = db.define('users', {
 	username: {
 		type: DataTypes.STRING,
 		allowNull: false,
+		unique: true,
 	},
 	password: {
 		type: DataTypes.STRING,
@@ -27,6 +29,7 @@ const userModel = db.define('users', {
 	ci: {
 		type: DataTypes.STRING(100),
 		allowNull: false,
+		unique: true,
 	},
 	telephone: {
 		type: DataTypes.STRING(25),
@@ -38,11 +41,17 @@ const userModel = db.define('users', {
 		validate: {
 			isEmail: true,
 		},
-	},
-	role: {
-		type: DataTypes.STRING,
-		allowNull: false,
+		unique: true,
 	},
 });
 
-module.exports = userModel;
+User.belongsTo(Role, {
+	foreignKey: {
+		name: 'role_id',
+		allowNull: false,
+		onDelete: 'RESTRICT',
+		onUpdate: 'RESTRICT',
+	},
+});
+
+module.exports = User;
