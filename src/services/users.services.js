@@ -2,14 +2,14 @@ const User = require('../models/users.model.js');
 const { Op } = require('sequelize');
 const hashPassword = require('../utils/hashPassword');
 
-const findUsers = async (cursor, queryLimit) => {
+const findUsers = async (cursor, limit) => {
 	const users = await User.findAll({
 		where: {
 			id: {
 				[Op.gt]: cursor,
 			},
 		},
-		limit: queryLimit,
+		limit: limit + 1,
 		attributes: { exclude: ['password'] },
 	});
 

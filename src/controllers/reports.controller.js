@@ -5,16 +5,23 @@ const {
 	editReport,
 	deleteReport,
 } = require('../services/reports.services.js');
+const getPagination = require('../utils/getPagination.js');
 
 const reportsController = {};
 
 reportsController.getReports = async (request, response, next) => {
+	const { since_id = 0, limit = 10 } = request.query;
+
 	try {
-		const reports = await findReports();
+		const reports = await findReports(since_id, limit);
+
+		const { data, pagination } = getPagination(reports, limit, request);
 
 		return response.status(200).json({
-			reports,
+			reports: data,
+			pagination
 		});
+		
 	} catch (error) {
 		next(error);
 	}

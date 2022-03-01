@@ -31,7 +31,7 @@ authController.login = async (request, response, next) => {
 			const token = jwt.sign(signedUser, process.env.SECRET);
 
 			return response.status(200).json({
-				signedUser,
+				user: signedUser,
 				token,
 			});
 		}

@@ -1,9 +1,17 @@
 const Report = require('../models/reports.model.js');
 const Request = require('../models/requests.model.js');
 const { db } = require('../services/connection.js');
+const { Op } = require('sequelize');
 
-const findReports = async () => {
-	const reports = await Report.findAll();
+const findReports = async (cursor, limit) => {
+	const reports = await Report.findAll({
+		where: {
+			id: {
+				[Op.gt]: cursor,
+			},
+		},
+		limit: limit + 1,
+	});
 
 	return reports;
 };

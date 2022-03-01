@@ -1,10 +1,18 @@
 const Device = require('../models/device.model.js')
 const Request = require('../models/requests.model.js')
+const { Op } = require('sequelize');
 const { db } = require('../services/connection.js')
 
-const findRequests = async () => {
+const findRequests = async (cursor, limit) => {
 
-	const requests = await Request.findAll({})
+	const requests = await Request.findAll({
+		where: {
+			id: {
+				[Op.gt]: cursor,
+			},
+		},
+		limit: limit + 1
+	})
 
 	return requests
 }

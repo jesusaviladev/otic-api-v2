@@ -161,12 +161,14 @@ const validatePagination = [
 	check('since_id', 'Invalid parameter in request')
 		.optional()
 		.isNumeric()
-		.trim(),
+		.trim()
+		.toInt(),
 	check('limit', 'Invalid parameter in request')
 		.optional()
 		.isNumeric()
 		.trim()
-		.matches(/^([1-9][0-9]?|100)$/),
+		.matches(/^([1-9][0-9]?|100)$/)
+		.toInt(),
 	(request, response, next) => {
 		const errors = validationResult(request);
 		if (!errors.isEmpty()) {

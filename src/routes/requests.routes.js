@@ -6,10 +6,10 @@ const {
 	editRequest,
 	deleteRequest,
 } = require('../controllers/requests.controller.js');
-const { validateRequest, validateEditedRequest } = require('../middlewares/validation.js')
+const { validateRequest, validateEditedRequest, validatePagination } = require('../middlewares/validation.js')
 const { verifyToken, checkAdmin } = require('../middlewares/auth.js')
 
-requestsRouter.get('/', verifyToken, checkAdmin, getRequests);
+requestsRouter.get('/', verifyToken, checkAdmin, validatePagination, getRequests);
 
 requestsRouter.get('/:id', verifyToken, checkAdmin, getRequestsById);
 

@@ -6,13 +6,19 @@ const {
 	deleteRequest,
 } = require('../services/requests.services.js');
 const requestsController = {};
+const getPagination = require('../utils/getPagination.js');
 
 requestsController.getRequests = async (request, response, next) => {
+	const { since_id = 0, limit = 10 } = request.query;
+
 	try {
-		const requests = await findRequests();
+		const requests = await findRequests(since_id, limit);
+
+		const { data, pagination } = getPagination(requests, limit, request);
 
 		return response.status(200).json({
-			requests,
+			requests: data,
+			pagination
 		});
 	} catch (error) {
 		next(error);

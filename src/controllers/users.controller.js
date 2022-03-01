@@ -10,25 +10,15 @@ const {
 
 usersController.getUsers = async (request, response, next) => {
 	const { since_id = 0, limit = 10 } = request.query;
-	const { cursor, queryLimit } = getPagination(since_id, limit);
 
 	try {
-		const users = await findUsers(cursor, queryLimit);
+		const users = await findUsers(since_id, limit);
 
-		let nextCursor = null;
-
-		if (users.length > 0 && users.length > limit) {
-			users.pop();
-			nextCursor = `http://localhost:3000/api/users/?since_id=${
-				users[users.length - 1].id
-			}&limit=${limit}`;
-		}
+		const { data, pagination } = getPagination(users, limit, request);
 
 		return response.status(200).json({
-			users,
-			pagination: {
-				nextPage: nextCursor,
-			},
+			data,
+			pagination
 		});
 	} catch (error) {
 		next(error);
