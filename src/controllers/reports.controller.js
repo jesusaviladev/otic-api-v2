@@ -51,7 +51,7 @@ reportsController.createReport = async (request, response, next) => {
 		const createdReport = await addReport(data);
 
 		return response.status(201).json({
-			createdReport
+			report: createdReport
 		});
 	} catch (error) {
 		next(error);

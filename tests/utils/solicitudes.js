@@ -47,6 +47,13 @@ const solicitudes = [
 		serial_id: 'BN157784',
 		date: new Date().toISOString(),
 	},
+	{
+		description: 'Debe añadirse nueva ram',
+		user_id: 2,
+		status_id: 3,
+		serial_id: 'BN157784',
+		date: new Date().toISOString(),
+	}
 ];
 
 module.exports = {

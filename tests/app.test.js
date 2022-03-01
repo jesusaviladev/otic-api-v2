@@ -2,13 +2,16 @@ const { app, checkDBConnection } = require('../src/app.js');
 const { db } = require('../src/services/connection.js');
 const Role = require('../src/models/roles.model');
 const Status = require('../src/models/status.model');
+const User = require('../src/models/users.model');
+const { usuarios } = require('./utils/usuarios.js');
 const supertest = require('supertest');
 
 const api = supertest(app);
 
 beforeAll(async () => {
-	await checkDBConnection()
-})
+	await checkDBConnection();
+	await User.bulkCreate(usuarios)
+});
 
 describe('api', () => {
 	test('inicia correctamente', async () => {
@@ -34,6 +37,31 @@ describe('api', () => {
 		const status = await Status.findAll({});
 
 		expect(status.length).toBe(3);
+	});
+});
+
+describe('post /api/auth', () => {
+	test('debe iniciar sesion y devolver un token', async () => {
+
+		const response = await api
+			.post('/api/auth/login')
+			.send({
+				username: 'jesusaviladev',
+				password: 'pepito'
+			})
+			.expect(200);
+
+		expect(response.body.token).toBeDefined();
+	});
+
+	test('debe dar error si el usuario o contraseña son incorrectos', async () => {
+		const response = await api
+			.post('/api/auth/login')
+			.send({
+				username: 'jesusaviladev',
+				password: 'pepito2',
+			})
+			.expect(400);
 	});
 });
 

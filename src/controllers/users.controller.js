@@ -17,7 +17,7 @@ usersController.getUsers = async (request, response, next) => {
 		const { data, pagination } = getPagination(users, limit, request);
 
 		return response.status(200).json({
-			data,
+			users: data,
 			pagination
 		});
 	} catch (error) {

@@ -1,7 +1,7 @@
 const usuarios = [
 	{
 		username: 'jesusaviladev',
-		password: 'pepito',
+		password: '$2b$10$U59eSWe3A81R385wSyuMpu.2v2bLxJ67IfnYinezx8KjPXVLiW5WG',
 		name: 'jesus',
 		surname: 'avila',
 		ci: '26990863',
@@ -11,7 +11,7 @@ const usuarios = [
 	},
 	{
 		username: 'manueljerez',
-		password: '123456',
+		password: '$2b$10$IqRgp4MqP9.y1vLoQ.IFP.KZW3FIVZhmvRMAZXW2Ie6BkrIC8PNde',
 		name: 'manuel',
 		surname: 'jerez',
 		ci: '26457000',
@@ -21,7 +21,7 @@ const usuarios = [
 	},
 	{
 		username: 'cpineda',
-		password: 'cpineda123',
+		password: '$2b$10$PnB3fG1fN3tzp/4VphVZ6uORnPiR6Rb.5hZ0XikB8Qt7i7xrpIVcG',
 		name: 'cesar',
 		surname: 'pineda',
 		ci: '9387596',
