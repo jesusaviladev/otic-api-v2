@@ -145,6 +145,19 @@ describe('reportes', () => {
 			})
 			.expect(401)
 		})
+
+		test('no debe poder agregar un reporte si no es el usuario asignado', async () => {
+			const response = await api
+			.post('/api/reports')
+			.set('Authorization', `Bearer ${userToken}`)
+			.send({
+				comment: "Reparada la tarjeta madre",
+				request_id: 2
+			})
+			.expect(400)
+
+			expect(response.body.errors[0].msg).toContain('Request not assigned to this user')
+		})
 	})
 	
 	describe('patch /reports', () => {
@@ -169,6 +182,16 @@ describe('reportes', () => {
 				comment: "Reparada la tarjeta madre por luisillo"
 			})
 			.expect(401)
+		})
+
+		test('no debe poder editar un reporte si el reporte no pertenece al usuario', async () => {
+			const response = await api
+			.patch('/api/reports/3')
+			.set('Authorization', `Bearer ${userToken}`)
+			.send({
+				comment: "Reparada la tarjeta madrea a",
+			})
+			.expect(400)
 		})
 	})
 

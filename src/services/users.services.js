@@ -1,6 +1,6 @@
 const User = require('../models/users.model.js');
 const { Op } = require('sequelize');
-const hashPassword = require('../utils/hashPassword');
+const { hashPassword } = require('../utils/hashPassword');
 
 const findUsers = async (cursor, limit) => {
 	const users = await User.findAll({

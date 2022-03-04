@@ -1,6 +1,6 @@
 const User = require('../models/users.model.js');
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { checkPassword } = require('../utils/hashPassword.js')
 const authController = {};
 
 authController.signup = (request, response) => {
@@ -15,7 +15,7 @@ authController.login = async (request, response, next) => {
 
 		const passwordMatch = user === null
 				? false
-				: await bcrypt.compare(password, user.password);
+				: await checkPassword(password, user.password);
 
 		if (!user || !passwordMatch) {
 			return response.status(400).json({

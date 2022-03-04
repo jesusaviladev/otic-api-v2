@@ -71,7 +71,7 @@ reportsController.editReport = async (request, response, next) => {
 			});
 		
 		return response.status(200).json({
-			message: 'Successfully deleted report'
+			message: 'Successfully edited report'
 		});
 	} catch (error) {
 		next(error);
@@ -90,7 +90,9 @@ reportsController.deleteReport = async (request, response, next) => {
 			});
 		}
 
-		return response.status(200).json();
+		return response.status(200).json({
+			message: 'Successfully deleted report'
+		});
 
 	} catch (error) {
 		next(error);

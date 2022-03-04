@@ -143,7 +143,6 @@ const validateEditedUser = [
 				return Promise.reject('Email already exists');
 			}
 		}),
-
 	(request, response, next) => {
 		const errors = validationResult(request);
 		if (!errors.isEmpty()) {
@@ -282,15 +281,19 @@ const validateEditedRequest = [
 
 const validateReport = [
 	check('comment').exists().notEmpty().isString().trim().escape(),
-	check('request_id').exists().notEmpty().trim().custom(async (value) => {
+	check('request_id').exists().notEmpty().trim().custom(async (value, { req }) => {
 		const request = await Request.findOne({ where: { id: value }})
-
+		
 		if(!request) {
 			return Promise.reject('Invalid ID, request does not exists')
 		}
 
 		if(!request.user_id){
 			return Promise.reject('Request must have an assigned user first')
+		}
+
+		if(request.user_id !== req.user.id){
+			return Promise.reject('Request not assigned to this user')
 		}
 	}),
 	(request, response, next) => {
