@@ -3,10 +3,6 @@ const jwt = require('jsonwebtoken');
 const { checkPassword } = require('../utils/hashPassword.js')
 const authController = {};
 
-authController.signup = (request, response) => {
-	response.send('signup');
-};
-
 authController.login = async (request, response, next) => {
 	const { username, password } = request.body;
 
@@ -23,18 +19,19 @@ authController.login = async (request, response, next) => {
 			});
 		} else {
 			const signedUser = {
-				id: user.id,
-				username: user.username,
-				role: user.role_id,
+				id: user.id
 			};
 
-			const token = jwt.sign(signedUser, process.env.SECRET);
+			const token = jwt.sign(signedUser, process.env.SECRET, {
+				expiresIn: '3d'
+			});
 
 			return response.status(200).json({
 				user: signedUser,
 				token,
 			});
 		}
+		
 	} catch (error) {
 		next(error);
 	}

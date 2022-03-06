@@ -11,9 +11,9 @@ const { verifyToken, checkAdmin } = require('../middlewares/auth.js')
 
 requestsRouter.get('/', verifyToken, checkAdmin, validatePagination, getRequests);
 
-requestsRouter.get('/:id', verifyToken, checkAdmin, getRequestsById);
+requestsRouter.get('/:id', verifyToken, getRequestsById);
 
-requestsRouter.post('/', verifyToken, checkAdmin, validateRequest, createRequest);
+requestsRouter.post('/', verifyToken, validateRequest, createRequest);
 
 requestsRouter.patch('/:id', verifyToken, checkAdmin, validateEditedRequest, editRequest);
 

@@ -2,6 +2,7 @@
 const express = require('express');
 require('dotenv').config();
 require('./services/connection.js'); //Nos conectamos a la BD
+require('./models/associations')
 const checkDBConnection = require('./utils/checkDBConnection.js');
 const pkg = require('../package.json');
 

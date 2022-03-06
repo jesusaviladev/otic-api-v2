@@ -1,3 +1,5 @@
+const requestsController = {};
+const getPagination = require('../utils/getPagination.js');
 const {
 	findRequests,
 	findRequestById,
@@ -5,8 +7,7 @@ const {
 	editRequest,
 	deleteRequest,
 } = require('../services/requests.services.js');
-const requestsController = {};
-const getPagination = require('../utils/getPagination.js');
+const { findUserById } = require('../services/users.services.js')
 
 requestsController.getRequests = async (request, response, next) => {
 	const { since_id = 0, limit = 10 } = request.query;
@@ -29,7 +30,16 @@ requestsController.getRequestsById = async (req, res, next) => {
 	const { id } = req.params;
 
 	try {
+
+		const user = await findUserById(req.user.id)
+
 		const request = await findRequestById(id);
+
+		if(!user || (user.role.name !== 'admin' && request.user_id !== user.id)){
+			return res.status(403).json({
+				error: 'User not allowed to see this request'
+			})
+		}
 
 		if (!request)
 			return res.status(404).json({
@@ -44,13 +54,19 @@ requestsController.getRequestsById = async (req, res, next) => {
 	}
 };
 
-requestsController.createRequest = async (request, response, next) => {
-	const data = request.body;
+requestsController.createRequest = async (req, res, next) => {
+	const data = req.body;
 
 	try {
+		const user = await findUserById(req.user.id)
+
+		if(user.role.name !== 'admin'){
+			data.user_id = null
+		}
+
 		const request = await addRequest(data);
 
-		return response.status(200).json({
+		return res.status(200).json({
 			request
 		});
 

@@ -43,6 +43,7 @@ const validateUser = [
 		.notEmpty()
 		.isString()
 		.trim()
+		.matches(/([V,E]-[0-9]{5,9})/g)
 		.custom(async (value) => {
 			if (await fieldExists('ci', value)) {
 				return Promise.reject('Document already exists');
@@ -123,6 +124,7 @@ const validateEditedUser = [
 		.notEmpty()
 		.isString()
 		.trim()
+		.matches(/([V,E]-[0-9]{5,9})/g)
 		.custom(async (value) => {
 			if (await fieldExists('ci', value)) {
 				return Promise.reject('Document already exists');
@@ -286,14 +288,6 @@ const validateReport = [
 		
 		if(!request) {
 			return Promise.reject('Invalid ID, request does not exists')
-		}
-
-		if(!request.user_id){
-			return Promise.reject('Request must have an assigned user first')
-		}
-
-		if(request.user_id !== req.user.id){
-			return Promise.reject('Request not assigned to this user')
 		}
 	}),
 	(request, response, next) => {

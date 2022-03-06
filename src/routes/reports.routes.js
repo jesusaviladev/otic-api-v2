@@ -6,7 +6,7 @@ const { validateReport, validateEditedReport, validatePagination } = require('..
 
 reportsRouter.get('/', verifyToken, checkAdmin, validatePagination, getReports);
 
-reportsRouter.get('/:id', verifyToken, checkAdmin, getReportById);
+reportsRouter.get('/:id', verifyToken, getReportById);
 
 reportsRouter.post('/', verifyToken, validateReport, createReport);
 

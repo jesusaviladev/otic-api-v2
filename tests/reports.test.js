@@ -22,7 +22,7 @@ beforeAll(async () => {
 	await Report.bulkCreate(reportes)
 
 	const responseAdmin = await api.post('/api/auth/login').send({
-		username: 'jesusaviladev',
+		username: 'admin',
 		password: 'pepito'
 	})
 
@@ -86,7 +86,7 @@ describe('reportes', () => {
 			.expect('Content-type', /application\/json/);
 
 			expect(response.body.report.comment).toBe("Comprada nueva RAM")
-			expect(response.body.report.user_id).toBe(2)
+			expect(response.body.report.user_id).toBe(3)
 			expect(response.body.report.request_id).toBe(6)
 		})
 
@@ -121,7 +121,7 @@ describe('reportes', () => {
 
 			expect(reportes).toHaveLength(3)
 			expect(solicitud.status_id).toBe(3)
-			expect(response.body.report.user_id).toBe(2)
+			expect(response.body.report.user_id).toBe(3)
 
 		})
 
@@ -154,9 +154,9 @@ describe('reportes', () => {
 				comment: "Reparada la tarjeta madre",
 				request_id: 2
 			})
-			.expect(400)
+			.expect(403)
 
-			expect(response.body.errors[0].msg).toContain('Request not assigned to this user')
+			expect(response.body.error).toContain('User is not assigned to this request')
 		})
 	})
 	
@@ -186,12 +186,12 @@ describe('reportes', () => {
 
 		test('no debe poder editar un reporte si el reporte no pertenece al usuario', async () => {
 			const response = await api
-			.patch('/api/reports/3')
+			.patch('/api/reports/1')
 			.set('Authorization', `Bearer ${userToken}`)
 			.send({
 				comment: "Reparada la tarjeta madrea a",
 			})
-			.expect(400)
+			.expect(403)
 		})
 	})
 

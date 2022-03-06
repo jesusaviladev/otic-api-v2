@@ -20,7 +20,7 @@ beforeAll(async () => {
 		await Request.bulkCreate(solicitudes);
 
 	const responseAdmin = await api.post('/api/auth/login').send({
-		username: 'jesusaviladev',
+		username: 'admin',
 		password: 'pepito'
 	})
 
@@ -93,7 +93,7 @@ describe('endpoints de solicitudes', () => {
 			expect(response.body.request.description)
 			.toBe('No tiene RAM')
 			expect(response.body.request.serial_id).toBe('BN157333')
-			expect(response.body.request.user_id).toBe(2)
+			expect(response.body.request.user_id).toBe(3)
 		})
 
 		test('no debe devolver nada si no se envia un token', async () => {
@@ -103,9 +103,9 @@ describe('endpoints de solicitudes', () => {
 				.expect('Content-type', /application\/json/);	
 		})
 
-		test('no debe responder si el usuario no es admin', async () => {
+		test('no debe responder si la request no esta asignada a ese usuario', async () => {
 			const response = await api
-			.get('/api/requests/3')
+			.get('/api/requests/2')
 			.set('Authorization', `Bearer ${userToken}`)
 			.expect(403)
 			.expect('Content-type', /application\/json/);
@@ -122,7 +122,7 @@ describe('endpoints de solicitudes', () => {
 			.set('Authorization', `Bearer ${adminToken}`)
 			.send({
 			description: 'Equipo no tiene pantalla',
-			userId: 3,
+			user_id: 3,
 			device: {
 				exists: true,
 				serial: 'BN157784',
@@ -136,6 +136,7 @@ describe('endpoints de solicitudes', () => {
 
 			expect(solicitudes).toHaveLength(7)
 			expect(response.body.request.serial_id).toBe('BN157784')
+			expect(response.body.request.user_id).toBe("3")
 		})
 
 		test('debe poder ingresar una solicitud de un equipo que no existe', async () => {
@@ -144,7 +145,7 @@ describe('endpoints de solicitudes', () => {
 			.set('Authorization', `Bearer ${adminToken}`)
 			.send({
 				description: 'Tarjeta de red dañada',
-				userId: 2,
+				user_id: 2,
 				device: {
 					exists: false,
 					serial: 'BN147588',
@@ -161,6 +162,7 @@ describe('endpoints de solicitudes', () => {
 			expect(response.body.request.request.serial_id).toBe('BN147588')
 			expect(response.body.request.request.description).toBe('Tarjeta de red dañada')
 			expect(equipos).toHaveLength(3)
+			expect(response.body.request.request.user_id).toBe("2")
 		})
 
 		test('no debe permitir ingresar una solicitud con datos erroneos', async () => {
@@ -187,7 +189,7 @@ describe('endpoints de solicitudes', () => {
 			.set('Authorization', `Bearer ${adminToken}`)
 			.send({
 				description: 'Tarjeta de red dañada',
-				userId: 2,
+				user_id: 2,
 				device: {
 					exists: true,
 					serial: 'JKFR8989', //serial que no existe en la BD
@@ -202,21 +204,25 @@ describe('endpoints de solicitudes', () => {
 			expect(solicitudes).toHaveLength(8)
 		})
 
-		test('no debe poder ingresar una solicitud si el usuario no es admin', async () => {
+		test('no debe poder asignar un usuario si no es admin', async () => {
 			const response = await api
 			.post('/api/requests')
 			.set('Authorization', `Bearer ${userToken}`)
 			.send({
 			description: 'No enciende el monitor',
-			userId: 3,
+			user_id: 3,
 			device: {
-				exists: true,
+				exists: false,
 				serial: 'BN154587',
 				type: 'Escritorio',
 				name: 'PC-VIT-2'
 			}
 			})
-			.expect(403)
+			.expect(200)
+			
+			const solicitud = await Request.findOne({ where: { id: 9 }})
+
+			expect(solicitud.user_id).toBe(null)
 		})
 
 		test('no debe poder agregar una solicitud si no hay un token', async () =>{
@@ -224,7 +230,7 @@ describe('endpoints de solicitudes', () => {
 			.post('/api/requests')
 			.send({
 			description: 'No enciende el monitor',
-			userId: 2,
+			user_id: 2,
 			device: {
 				exists: true,
 				serial: 'BN154587',
@@ -290,7 +296,7 @@ describe('endpoints de solicitudes', () => {
 				const solicitud = await Request.findOne({ where: { id : 2 }})
 
 				expect(solicitud.description).toBe('Pantalla dañada')
-				expect(solicitud.user_id).toBe(3)
+				expect(solicitud.user_id).toBe(4)
 				expect(solicitud.status_id).toBe(2)
 				expect(solicitud.serial_id).toBe('BN157333')
 			})
@@ -305,7 +311,7 @@ describe('endpoints de solicitudes', () => {
 
 				const solicitudes = await Request.findAll()
 
-				expect(solicitudes).toHaveLength(7)
+				expect(solicitudes).toHaveLength(8)
 			})
 
 		test('no debe poder eliminar si el usuario no es admin', async () => {

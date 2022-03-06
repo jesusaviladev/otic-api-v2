@@ -1,4 +1,7 @@
 const User = require('../models/users.model.js');
+const Request = require('../models/requests.model.js');
+const Report = require('../models/reports.model.js');
+const Role = require('../models/roles.model.js');
 const { Op } = require('sequelize');
 const { hashPassword } = require('../utils/hashPassword');
 
@@ -20,6 +23,7 @@ const findUserById = async (id) => {
 	const user = await User.findOne({
 		where: { id: id },
 		attributes: { exclude: ['password'] },
+		include: Role,
 	});
 
 	return user;
@@ -68,10 +72,32 @@ const deleteUser = async (id) => {
 	return Boolean(user);
 };
 
+const findUserRequests = async (id) => {
+	const result = await User.findOne({
+		where: { id: id },
+		include: Request,
+		attributes: { exclude: ['password'] },
+	});
+
+	return result;
+};
+
+const findUserReports = async (id) => {
+	const result = await User.findOne({
+		where: { id: id },
+		include: Report,
+		attributes: { exclude: ['password'] },
+	});
+
+	return result;
+};
+
 module.exports = {
 	findUsers,
 	findUserById,
 	addUser,
 	editUser,
 	deleteUser,
+	findUserRequests,
+	findUserReports,
 };

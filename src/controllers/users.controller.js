@@ -6,12 +6,15 @@ const {
 	addUser,
 	editUser,
 	deleteUser,
+	findUserRequests,
+	findUserReports
 } = require('../services/users.services.js');
 
 usersController.getUsers = async (request, response, next) => {
 	const { since_id = 0, limit = 10 } = request.query;
 
 	try {
+
 		const users = await findUsers(since_id, limit);
 
 		const { data, pagination } = getPagination(users, limit, request);
@@ -29,6 +32,15 @@ usersController.getUserById = async (request, response, next) => {
 	const { id } = request.params;
 
 	try {
+		//autorizacion
+		const reqUser = await findUserById(request.user.id)
+
+		if(!reqUser || (reqUser.role.name !== 'admin' && reqUser.id !== parseInt(id))){
+			return response.status(403).json({
+				error: 'Unauthorized'
+			})
+		}
+
 		const user = await findUserById(id);
 
 		if (!user)
@@ -43,6 +55,52 @@ usersController.getUserById = async (request, response, next) => {
 		next(error);
 	}
 };
+
+usersController.getUserRequests = async (req, res, next) => {
+	const { id } = req.params
+
+	try {
+		//autorizacion
+		const user = await findUserById(req.user.id)
+
+		if(!user || (user.role.name !== 'admin' && user.id !== parseInt(id))){
+			return res.status(403).json({
+				error: 'Unauthorized'
+			})
+		}
+
+		const result = await findUserRequests(id)
+
+		res.status(200).json(result)
+	}
+
+	catch(error){
+		next(error)
+	}
+}
+
+usersController.getUserReports = async (req, res, next) => {
+	const { id } = req.params
+
+	try {
+		//autorizacion
+		const user = await findUserById(req.user.id)
+
+		if(!user || (user.role.name !== 'admin' && user.id !== parseInt(id))){
+			return res.status(403).json({
+				error: 'Unauthorized'
+			})
+		}
+		
+		const result = await findUserReports(id)
+
+		res.status(200).json(result)
+	}
+
+	catch(error){
+		next(error)
+	}
+}
 
 usersController.createUser = async (request, response, next) => {
 	const data = request.body;
@@ -62,6 +120,16 @@ usersController.editUser = async (request, response, next) => {
 	const data = request.body;
 
 	try {
+		
+		//autorizacion
+		const reqUser = await findUserById(request.user.id)
+
+		if(!reqUser || (reqUser.role.name !== 'admin' && reqUser.id !== parseInt(id))){
+			return response.status(403).json({
+				error: 'Unauthorized'
+			})
+		}
+
 		const [editedUser] = await editUser(id, data);
 
 		if (editedUser === 0)

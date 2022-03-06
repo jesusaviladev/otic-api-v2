@@ -1,5 +1,7 @@
 const Role = require('../models/roles.model.js');
 const Status = require('../models/status.model.js');
+const User = require('../models/users.model.js');
+const { hashPassword } = require('./hashPassword.js')
 
 const createDefaultRoles = async () => {
 	try {
@@ -8,8 +10,8 @@ const createDefaultRoles = async () => {
 		if (result === 0) {
 
 			const roles = await Role.bulkCreate([
-				{ role: 'admin' },
-				{ role: 'user' },
+				{ name: 'admin' },
+				{ name: 'user' },
 			]);
 
 			for(const role of roles){
@@ -42,7 +44,36 @@ const createDefaultStatus = async () => {
 	}
 };
 
+const createAdmin = async () => {
+	try {
+		const result = await User.count();
+
+		if(result === 0){
+
+			const hashedPassword = await hashPassword('pepito')
+
+			const admin = await User.create({
+				username: 'admin',
+				password: hashedPassword,
+				name: 'admin',
+				surname: 'admin',
+				ci: 'V-000000',
+				telephone: '0000000',
+				email: 'admin@gmail.com',
+				role_id: 1
+			})
+
+			console.log('Admin user created', admin.toJSON())
+		}
+	}
+
+	catch(error){
+		throw new Error(error);
+	}
+}
+
 module.exports = {
 	createDefaultRoles,
-	createDefaultStatus
+	createDefaultStatus,
+	createAdmin
 };
