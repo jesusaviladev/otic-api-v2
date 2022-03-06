@@ -283,7 +283,7 @@ const validateEditedRequest = [
 
 const validateReport = [
 	check('comment').exists().notEmpty().isString().trim().escape(),
-	check('request_id').exists().notEmpty().trim().custom(async (value, { req }) => {
+	check('request_id').exists().notEmpty().trim().custom(async (value) => {
 		const request = await Request.findOne({ where: { id: value }})
 		
 		if(!request) {

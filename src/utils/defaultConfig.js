@@ -50,7 +50,7 @@ const createAdmin = async () => {
 
 		if(result === 0){
 
-			const hashedPassword = await hashPassword('pepito')
+			const hashedPassword = await hashPassword(process.env.ADMIN_PASSWORD)
 
 			const admin = await User.create({
 				username: 'admin',

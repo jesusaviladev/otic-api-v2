@@ -1,7 +1,5 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/users.model.js')
 const { findUserById } = require('../services/users.services.js')
-const Role = require('../models/roles.model.js')
 
 const verifyToken = (request, response, next) => {
 	try {
