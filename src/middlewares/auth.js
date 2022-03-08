@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { findUserById } = require('../services/users.services.js')
+const { findUserById } = require('../services/users.services.js');
 
 const verifyToken = (request, response, next) => {
 	try {
@@ -16,13 +16,12 @@ const verifyToken = (request, response, next) => {
 				error: 'Missing or invalid token',
 			});
 		}
-		
+
 		const decodedToken = jwt.verify(token, process.env.SECRET);
 
 		request.user = decodedToken;
 
 		next();
-
 	} catch (error) {
 		next(error);
 	}
@@ -30,24 +29,21 @@ const verifyToken = (request, response, next) => {
 
 const checkAdmin = async (request, response, next) => {
 	try {
+		const user = await findUserById(request.user.id);
 
-		const user = await findUserById(request.user.id)
-
-		if(!user || user.role.name !== 'admin'){
+		if (!user || user.role.name !== 'admin') {
 			return response.status(403).json({
-				error: 'Unauthorized'
-			})
+				error: 'Unauthorized',
+			});
 		}
 
-		next()
+		next();
+	} catch (error) {
+		next(error);
 	}
-
-	catch(error){
-		next(error)
-	}
-}
+};
 
 module.exports = {
 	verifyToken,
-	checkAdmin
+	checkAdmin,
 };

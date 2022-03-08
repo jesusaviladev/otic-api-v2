@@ -23,38 +23,34 @@ const findReportById = async (id) => {
 };
 
 const addReport = async (data) => {
-
-	const t = await db.transaction()
+	const t = await db.transaction();
 
 	try {
-
 		data.date = new Date().toISOString();
 
 		const reportedRequest = await Request.findOne({
 			where: { id: data.request_id },
-			transaction: t
+			transaction: t,
 		});
 
-		data.user_id = reportedRequest.user_id
+		data.user_id = reportedRequest.user_id;
 
 		const report = await Report.create(data, {
-			transaction: t
+			transaction: t,
 		});
 
 		reportedRequest.status_id = 3;
 
 		await reportedRequest.save({
-			transaction: t
+			transaction: t,
 		});
 
-		await t.commit()
+		await t.commit();
 
 		return report;
-
 	} catch (error) {
-
-			await t.rollback();
-			throw new Error(error)
+		await t.rollback();
+		throw new Error(error);
 	}
 };
 

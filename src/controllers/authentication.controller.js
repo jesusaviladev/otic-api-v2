@@ -1,6 +1,6 @@
 const User = require('../models/users.model.js');
 const jwt = require('jsonwebtoken');
-const { checkPassword } = require('../utils/hashPassword.js')
+const { checkPassword } = require('../utils/hashPassword.js');
 const authController = {};
 
 authController.login = async (request, response, next) => {
@@ -9,9 +9,8 @@ authController.login = async (request, response, next) => {
 	try {
 		const user = await User.findOne({ where: { username: username } });
 
-		const passwordMatch = user === null
-				? false
-				: await checkPassword(password, user.password);
+		const passwordMatch =
+			user === null ? false : await checkPassword(password, user.password);
 
 		if (!user || !passwordMatch) {
 			return response.status(400).json({
@@ -19,11 +18,11 @@ authController.login = async (request, response, next) => {
 			});
 		} else {
 			const signedUser = {
-				id: user.id
+				id: user.id,
 			};
 
 			const token = jwt.sign(signedUser, process.env.SECRET, {
-				expiresIn: '3d'
+				expiresIn: '3d',
 			});
 
 			return response.status(200).json({
@@ -31,7 +30,6 @@ authController.login = async (request, response, next) => {
 				token,
 			});
 		}
-		
 	} catch (error) {
 		next(error);
 	}

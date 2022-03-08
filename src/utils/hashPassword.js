@@ -7,5 +7,5 @@ const checkPassword = async (password, hashedPassword) =>
 
 module.exports = {
 	hashPassword,
-	checkPassword
-}
+	checkPassword,
+};

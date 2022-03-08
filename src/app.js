@@ -1,32 +1,32 @@
-//requerimos modulos de node
+// requerimos modulos de node
 const express = require('express');
 require('dotenv').config();
-require('./services/connection.js'); //Nos conectamos a la BD
-require('./models/associations')
+require('./services/connection.js'); // Nos conectamos a la BD
+require('./models/associations');
 const checkDBConnection = require('./utils/checkDBConnection.js');
 const pkg = require('../package.json');
 
-//importamos rutas
+// importamos rutas
 const authRouter = require('./routes/authentication.routes.js');
 const usersRouter = require('./routes/users.routes.js');
 const requestsRouter = require('./routes/requests.routes.js');
 const reportsRouter = require('./routes/reports.routes.js');
 
-//importamos middlewares
+// importamos middlewares
 const notFound = require('./middlewares/notFound.js');
 const errorHandler = require('./middlewares/errorHandler');
 
 const app = express();
 
-//configuración
-app.set('port', process.env.PORT || 3000);
+// configuración
+app.set('port', process.env.PORT || 3001);
 
-//middlewares
+// middlewares
 app.use(express.urlencoded({ extended: false }));
 
 app.use(express.json());
 
-//rutas
+// rutas
 app.get('/', (request, response) => {
 	return response.status(200).json({
 		app: pkg.name,
@@ -45,14 +45,14 @@ app.use('/api/requests', requestsRouter);
 
 app.use('/api/reports', reportsRouter);
 
-//ruta no encontrada
+// ruta no encontrada
 app.use(notFound);
 
-//manejador de errores
+// manejador de errores
 app.use(errorHandler);
 
 module.exports = {
-	//exportamos para testing
+	// exportamos para testing
 	app,
-	checkDBConnection
+	checkDBConnection,
 };

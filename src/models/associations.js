@@ -1,9 +1,9 @@
 const Role = require('./roles.model.js');
-const Status = require('./status.model.js')
+const Status = require('./status.model.js');
 const User = require('./users.model.js');
-const Request = require('./requests.model.js')
-const Report = require('./reports.model.js')
-const Device = require('./device.model.js')
+const Request = require('./requests.model.js');
+const Report = require('./reports.model.js');
+const Device = require('./device.model.js');
 
 Role.hasMany(User, {
 	foreignKey: {
@@ -12,7 +12,7 @@ Role.hasMany(User, {
 		onDelete: 'RESTRICT',
 		onUpdate: 'RESTRICT',
 	},
-})
+});
 
 User.belongsTo(Role, {
 	foreignKey: {
@@ -29,7 +29,7 @@ User.hasMany(Request, {
 		onDelete: 'RESTRICT',
 		onUpdate: 'RESTRICT',
 	},
-})
+});
 
 Request.belongsTo(User, {
 	foreignKey: {
@@ -46,7 +46,7 @@ Status.hasMany(Request, {
 		onDelete: 'RESTRICT',
 		onUpdate: 'RESTRICT',
 	},
-})
+});
 
 Request.belongsTo(Status, {
 	foreignKey: {
@@ -64,7 +64,7 @@ Device.hasMany(Request, {
 		onDelete: 'RESTRICT',
 		onUpdate: 'RESTRICT',
 	},
-})
+});
 
 Request.belongsTo(Device, {
 	foreignKey: {
@@ -73,7 +73,7 @@ Request.belongsTo(Device, {
 		onDelete: 'RESTRICT',
 		onUpdate: 'RESTRICT',
 	},
-})
+});
 
 User.hasMany(Report, {
 	foreignKey: {
@@ -82,7 +82,7 @@ User.hasMany(Report, {
 		onDelete: 'RESTRICT',
 		onUpdate: 'RESTRICT',
 	},
-})
+});
 
 Report.belongsTo(User, {
 	foreignKey: {
@@ -100,7 +100,7 @@ Request.hasOne(Report, {
 		onDelete: 'RESTRICT',
 		onUpdate: 'RESTRICT',
 	},
-})
+});
 
 Report.belongsTo(Request, {
 	foreignKey: {
@@ -110,6 +110,3 @@ Report.belongsTo(Request, {
 		onUpdate: 'RESTRICT',
 	},
 });
-
-
-

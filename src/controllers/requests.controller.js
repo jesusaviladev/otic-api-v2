@@ -7,7 +7,7 @@ const {
 	editRequest,
 	deleteRequest,
 } = require('../services/requests.services.js');
-const { findUserById } = require('../services/users.services.js')
+const { findUserById } = require('../services/users.services.js');
 
 requestsController.getRequests = async (request, response, next) => {
 	const { since_id = 0, limit = 10 } = request.query;
@@ -19,7 +19,7 @@ requestsController.getRequests = async (request, response, next) => {
 
 		return response.status(200).json({
 			requests: data,
-			pagination
+			pagination,
 		});
 	} catch (error) {
 		next(error);
@@ -30,15 +30,14 @@ requestsController.getRequestsById = async (req, res, next) => {
 	const { id } = req.params;
 
 	try {
-
-		const user = await findUserById(req.user.id)
+		const user = await findUserById(req.user.id);
 
 		const request = await findRequestById(id);
 
-		if(!user || (user.role.name !== 'admin' && request.user_id !== user.id)){
+		if (!user || (user.role.name !== 'admin' && request.user_id !== user.id)) {
 			return res.status(403).json({
-				error: 'User not allowed to see this request'
-			})
+				error: 'User not allowed to see this request',
+			});
 		}
 
 		if (!request)
@@ -58,18 +57,17 @@ requestsController.createRequest = async (req, res, next) => {
 	const data = req.body;
 
 	try {
-		const user = await findUserById(req.user.id)
+		const user = await findUserById(req.user.id);
 
-		if(user.role.name !== 'admin'){
-			data.user_id = null
+		if (user.role.name !== 'admin') {
+			data.user_id = null;
 		}
 
 		const request = await addRequest(data);
 
 		return res.status(200).json({
-			request
+			request,
 		});
-
 	} catch (error) {
 		next(error);
 	}
@@ -109,7 +107,7 @@ requestsController.deleteRequest = async (request, response, next) => {
 		}
 
 		return response.status(200).json({
-			message: 'Successfully deleted request'
+			message: 'Successfully deleted request',
 		});
 	} catch (error) {
 		next(error);

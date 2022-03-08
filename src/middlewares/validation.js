@@ -1,7 +1,7 @@
 const { check, validationResult, matchedData } = require('express-validator');
 const { fieldExists } = require('../utils/fieldExists');
 const Device = require('../models/device.model.js');
-const Request = require('../models/requests.model.js')
+const Request = require('../models/requests.model.js');
 
 const validateUser = [
 	check('username', 'Must enter a valid username')
@@ -223,15 +223,16 @@ const validateRequest = [
 		.notEmpty()
 		.isBoolean({ loose: false })
 		.custom(async (value, { req }) => {
-			if(value === true){
-				const device = await Device.findOne({ where: { serial: req.body.device.serial }})
+			if (value === true) {
+				const device = await Device.findOne({
+					where: { serial: req.body.device.serial },
+				});
 
-				if(!device){
-					return Promise.reject('Invalid ID, device does not exists')
+				if (!device) {
+					return Promise.reject('Invalid ID, device does not exists');
 				}
 			}
-		})
-		,
+		}),
 	check('device.serial', 'Must be a valid serial id')
 		.exists()
 		.notEmpty()
@@ -283,13 +284,17 @@ const validateEditedRequest = [
 
 const validateReport = [
 	check('comment').exists().notEmpty().isString().trim().escape(),
-	check('request_id').exists().notEmpty().trim().custom(async (value) => {
-		const request = await Request.findOne({ where: { id: value }})
-		
-		if(!request) {
-			return Promise.reject('Invalid ID, request does not exists')
-		}
-	}),
+	check('request_id')
+		.exists()
+		.notEmpty()
+		.trim()
+		.custom(async (value) => {
+			const request = await Request.findOne({ where: { id: value } });
+
+			if (!request) {
+				return Promise.reject('Invalid ID, request does not exists');
+			}
+		}),
 	(request, response, next) => {
 		const errors = validationResult(request);
 		if (!errors.isEmpty()) {
