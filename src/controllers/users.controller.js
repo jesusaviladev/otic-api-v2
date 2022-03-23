@@ -6,29 +6,21 @@ const {
 	addUser,
 	editUser,
 	deleteUser,
+	findUserRequests,
+	findUserReports,
 } = require('../services/users.services.js');
 
 usersController.getUsers = async (request, response, next) => {
 	const { since_id = 0, limit = 10 } = request.query;
-	const { cursor, queryLimit } = getPagination(since_id, limit);
 
 	try {
-		const users = await findUsers(cursor, queryLimit);
+		const users = await findUsers(since_id, limit);
 
-		let nextCursor = null;
-
-		if (users.length > 0 && users.length > limit) {
-			users.pop();
-			nextCursor = `http://localhost:3000/api/users/?since_id=${
-				users[users.length - 1].id
-			}&limit=${limit}`;
-		}
+		const { data, pagination } = getPagination(users, limit, request);
 
 		return response.status(200).json({
-			users,
-			pagination: {
-				nextPage: nextCursor,
-			},
+			users: data,
+			pagination,
 		});
 	} catch (error) {
 		next(error);
@@ -39,6 +31,18 @@ usersController.getUserById = async (request, response, next) => {
 	const { id } = request.params;
 
 	try {
+		// autorizacion
+		const reqUser = await findUserById(request.user.id);
+
+		if (
+			!reqUser ||
+			(reqUser.role.name !== 'admin' && reqUser.id !== parseInt(id))
+		) {
+			return response.status(403).json({
+				error: 'Unauthorized',
+			});
+		}
+
 		const user = await findUserById(id);
 
 		if (!user)
@@ -49,6 +53,48 @@ usersController.getUserById = async (request, response, next) => {
 		return response.status(200).json({
 			user,
 		});
+	} catch (error) {
+		next(error);
+	}
+};
+
+usersController.getUserRequests = async (req, res, next) => {
+	const { id } = req.params;
+
+	try {
+		// autorizacion
+		const user = await findUserById(req.user.id);
+
+		if (!user || (user.role.name !== 'admin' && user.id !== parseInt(id))) {
+			return res.status(403).json({
+				error: 'Unauthorized',
+			});
+		}
+
+		const result = await findUserRequests(id);
+
+		res.status(200).json(result);
+	} catch (error) {
+		next(error);
+	}
+};
+
+usersController.getUserReports = async (req, res, next) => {
+	const { id } = req.params;
+
+	try {
+		// autorizacion
+		const user = await findUserById(req.user.id);
+
+		if (!user || (user.role.name !== 'admin' && user.id !== parseInt(id))) {
+			return res.status(403).json({
+				error: 'Unauthorized',
+			});
+		}
+
+		const result = await findUserReports(id);
+
+		res.status(200).json(result);
 	} catch (error) {
 		next(error);
 	}
@@ -72,6 +118,18 @@ usersController.editUser = async (request, response, next) => {
 	const data = request.body;
 
 	try {
+		// autorizacion
+		const reqUser = await findUserById(request.user.id);
+
+		if (
+			!reqUser ||
+			(reqUser.role.name !== 'admin' && reqUser.id !== parseInt(id))
+		) {
+			return response.status(403).json({
+				error: 'Unauthorized',
+			});
+		}
+
 		const [editedUser] = await editUser(id, data);
 
 		if (editedUser === 0)

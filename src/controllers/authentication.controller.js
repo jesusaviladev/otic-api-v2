@@ -1,11 +1,7 @@
 const User = require('../models/users.model.js');
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { checkPassword } = require('../utils/hashPassword.js');
 const authController = {};
-
-authController.signup = (request, response) => {
-	response.send('signup');
-};
 
 authController.login = async (request, response, next) => {
 	const { username, password } = request.body;
@@ -13,9 +9,8 @@ authController.login = async (request, response, next) => {
 	try {
 		const user = await User.findOne({ where: { username: username } });
 
-		const passwordMatch = user === null
-				? false
-				: await bcrypt.compare(password, user.password);
+		const passwordMatch =
+			user === null ? false : await checkPassword(password, user.password);
 
 		if (!user || !passwordMatch) {
 			return response.status(400).json({
@@ -24,14 +19,14 @@ authController.login = async (request, response, next) => {
 		} else {
 			const signedUser = {
 				id: user.id,
-				username: user.username,
-				role: user.role_id,
 			};
 
-			const token = jwt.sign(signedUser, process.env.SECRET);
+			const token = jwt.sign(signedUser, process.env.SECRET, {
+				expiresIn: '3d',
+			});
 
 			return response.status(200).json({
-				signedUser,
+				user: signedUser,
 				token,
 			});
 		}

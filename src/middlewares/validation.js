@@ -1,7 +1,7 @@
 const { check, validationResult, matchedData } = require('express-validator');
 const { fieldExists } = require('../utils/fieldExists');
 const Device = require('../models/device.model.js');
-const Request = require('../models/requests.model.js')
+const Request = require('../models/requests.model.js');
 
 const validateUser = [
 	check('username', 'Must enter a valid username')
@@ -43,6 +43,7 @@ const validateUser = [
 		.notEmpty()
 		.isString()
 		.trim()
+		.matches(/([V,E]-[0-9]{5,9})/g)
 		.custom(async (value) => {
 			if (await fieldExists('ci', value)) {
 				return Promise.reject('Document already exists');
@@ -123,6 +124,7 @@ const validateEditedUser = [
 		.notEmpty()
 		.isString()
 		.trim()
+		.matches(/([V,E]-[0-9]{5,9})/g)
 		.custom(async (value) => {
 			if (await fieldExists('ci', value)) {
 				return Promise.reject('Document already exists');
@@ -143,7 +145,6 @@ const validateEditedUser = [
 				return Promise.reject('Email already exists');
 			}
 		}),
-
 	(request, response, next) => {
 		const errors = validationResult(request);
 		if (!errors.isEmpty()) {
@@ -161,12 +162,14 @@ const validatePagination = [
 	check('since_id', 'Invalid parameter in request')
 		.optional()
 		.isNumeric()
-		.trim(),
+		.trim()
+		.toInt(),
 	check('limit', 'Invalid parameter in request')
 		.optional()
 		.isNumeric()
 		.trim()
-		.matches(/^([1-9][0-9]?|100)$/),
+		.matches(/^([1-9][0-9]?|100)$/)
+		.toInt(),
 	(request, response, next) => {
 		const errors = validationResult(request);
 		if (!errors.isEmpty()) {
@@ -220,15 +223,16 @@ const validateRequest = [
 		.notEmpty()
 		.isBoolean({ loose: false })
 		.custom(async (value, { req }) => {
-			if(value === true){
-				const device = await Device.findOne({ where: { serial: req.body.device.serial }})
+			if (value === true) {
+				const device = await Device.findOne({
+					where: { serial: req.body.device.serial },
+				});
 
-				if(!device){
-					return Promise.reject('Invalid ID, device does not exists')
+				if (!device) {
+					return Promise.reject('Invalid ID, device does not exists');
 				}
 			}
-		})
-		,
+		}),
 	check('device.serial', 'Must be a valid serial id')
 		.exists()
 		.notEmpty()
@@ -280,17 +284,17 @@ const validateEditedRequest = [
 
 const validateReport = [
 	check('comment').exists().notEmpty().isString().trim().escape(),
-	check('request_id').exists().notEmpty().trim().custom(async (value) => {
-		const request = await Request.findOne({ where: { id: value }})
+	check('request_id')
+		.exists()
+		.notEmpty()
+		.trim()
+		.custom(async (value) => {
+			const request = await Request.findOne({ where: { id: value } });
 
-		if(!request) {
-			return Promise.reject('Invalid ID, request does not exists')
-		}
-
-		if(!request.user_id){
-			return Promise.reject('Request must have an assigned user first')
-		}
-	}),
+			if (!request) {
+				return Promise.reject('Invalid ID, request does not exists');
+			}
+		}),
 	(request, response, next) => {
 		const errors = validationResult(request);
 		if (!errors.isEmpty()) {

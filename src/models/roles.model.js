@@ -12,7 +12,7 @@ const Role = db.define(
 			primaryKey: true,
 			type: DataTypes.INTEGER,
 		},
-		role: {
+		name: {
 			type: DataTypes.STRING(10),
 			allowNull: false,
 			unique: true,

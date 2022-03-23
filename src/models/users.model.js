@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const { db } = require('../services/connection.js');
-const Role = require('./roles.model.js');
 
 const User = db.define('users', {
 	id: {
@@ -42,15 +41,6 @@ const User = db.define('users', {
 			isEmail: true,
 		},
 		unique: true,
-	},
-});
-
-User.belongsTo(Role, {
-	foreignKey: {
-		name: 'role_id',
-		allowNull: false,
-		onDelete: 'RESTRICT',
-		onUpdate: 'RESTRICT',
 	},
 });
 

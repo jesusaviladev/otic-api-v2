@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const { db } = require('../services/connection.js');
 
-const options = { timestamps: false };
+const options = { timestamps: false, freezeTableName: true };
 
 const Status = db.define(
 	'status',

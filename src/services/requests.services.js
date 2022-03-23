@@ -1,102 +1,109 @@
-const Device = require('../models/device.model.js')
-const Request = require('../models/requests.model.js')
-const { db } = require('../services/connection.js')
+const Device = require('../models/device.model.js');
+const Request = require('../models/requests.model.js');
+const { Op } = require('sequelize');
+const { db } = require('../services/connection.js');
 
-const findRequests = async () => {
+const findRequests = async (cursor, limit) => {
+	const requests = await Request.findAll({
+		where: {
+			id: {
+				[Op.gt]: cursor,
+			},
+		},
+		limit: limit + 1,
+	});
 
-	const requests = await Request.findAll({})
-
-	return requests
-}
+	return requests;
+};
 
 const findRequestById = async (id) => {
-	const request = await Request.findOne({ where: { id: id }})
+	const request = await Request.findOne({ where: { id: id } });
 
-	return request
-}
+	return request;
+};
 
 const addRequest = async (data) => {
+	const { description, device, user_id = null } = data;
 
-	const { description, device, user_id = null } = data
+	const status = user_id ? 2 : 1;
 
-	const status = user_id ? 2 : 1
+	if (!device.exists) {
+		// flag para saber si existe el equipo en BD
 
-	if(!device.exists){ //flag para saber si existe el equipo en BD
-
-		const t = await db.transaction()
+		const t = await db.transaction();
 
 		try {
+			const createdDevice = await Device.create(
+				{
+					serial: device.serial,
+					type: device.type,
+					name: device.name,
+				},
+				{
+					transaction: t,
+				}
+			);
 
-			const createdDevice = await Device.create({
-				serial: device.serial,
-				type: device.type,
-				name: device.name
-			}, {
-				transaction: t
-			})
+			const createdRequest = await Request.create(
+				{
+					date: new Date().toISOString(),
+					description,
+					user_id,
+					status_id: status,
+					serial_id: createdDevice.serial,
+				},
+				{
+					transaction: t,
+				}
+			);
 
-			const createdRequest = await Request.create({
-				date: new Date().toISOString(),
-				description,
-				user_id,
-				status_id: status,
-				serial_id: createdDevice.serial
-			}, {
-				transaction: t
-			})
-
-			await t.commit()
+			await t.commit();
 
 			return {
 				device: createdDevice,
-				request: createdRequest
-			}
-
-		} catch (error){
-
+				request: createdRequest,
+			};
+		} catch (error) {
 			await t.rollback();
-			throw new Error(error)
+			throw new Error(error);
 		}
-
 	} else {
 		const createdRequest = Request.create({
-				date: new Date().toISOString(),
-				description,
-				user_id,
-				status_id: status,
-				serial_id: device.serial
-		})
+			date: new Date().toISOString(),
+			description,
+			user_id,
+			status_id: status,
+			serial_id: device.serial,
+		});
 
-		return createdRequest
+		return createdRequest;
 	}
-}
+};
 
 const editRequest = async (id, data) => {
+	const { user_id } = data;
 
-	const { user_id } = data
-
-	if(user_id){
-		data.status_id = 2
+	if (user_id) {
+		data.status_id = 2;
 	}
 
 	const editedRequest = await Request.update(data, {
-		where: { id: id }
-	})
+		where: { id: id },
+	});
 
-	return editedRequest
-}
+	return editedRequest;
+};
 
 const deleteRequest = async (id) => {
+	const deletedRequest = await Request.destroy({ where: { id: id } });
 
-	const deletedRequest = await Request.destroy({ where: { id: id }})
-
-	return Boolean(deletedRequest)
-}
+	return Boolean(deletedRequest);
+};
 
 module.exports = {
 	findRequests,
 	findRequestById,
 	addRequest,
 	editRequest,
-	deleteRequest
-}
+	deleteRequest,
+};

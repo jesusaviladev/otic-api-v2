@@ -1,10 +1,20 @@
-const getPagination = (since_id, limit) => {
-	const cursor = Number(since_id);
-	const queryLimit = Number(limit) + 1;
+const getPagination = (data, limit, req) => {
+	const path = req.baseUrl;
+
+	let nextCursor = null;
+
+	if (data.length > 0 && data.length > limit) {
+		data.pop();
+		nextCursor = `http://localhost:3000${path}?since_id=${
+			data[data.length - 1].id
+		}&limit=${limit}`;
+	}
 
 	return {
-		cursor,
-		queryLimit,
+		data,
+		pagination: {
+			next: nextCursor,
+		},
 	};
 };
 

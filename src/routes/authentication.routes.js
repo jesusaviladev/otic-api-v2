@@ -1,8 +1,6 @@
 const authRouter = require('express').Router();
-const { signup, login } = require('../controllers/authentication.controller.js');
-const { validateLogin } = require('../middlewares/validation.js')
-
-//authRouter.post('/signup', signup);
+const { login } = require('../controllers/authentication.controller.js');
+const { validateLogin } = require('../middlewares/validation.js');
 
 authRouter.post('/login', validateLogin, login);
 

@@ -5,26 +5,13 @@
         "node": true,
         "jest": true
     },
-    "extends": "eslint:recommended",
+    "extends": [
+        "standard",
+        "eslint-config-prettier"
+    ],
     "parserOptions": {
         "ecmaVersion": "latest"
     },
     "rules": {
-        "indent": [
-            "error",
-            4
-        ],
-        "linebreak-style": [
-            "error",
-            "windows"
-        ],
-        "quotes": [
-            "error",
-            "single"
-        ],
-        "semi": [
-            "error",
-            "never"
-        ]
     }
 }
