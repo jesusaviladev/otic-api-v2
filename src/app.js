@@ -5,6 +5,7 @@ require('./services/connection.js'); // Nos conectamos a la BD
 require('./models/associations');
 const checkDBConnection = require('./utils/checkDBConnection.js');
 const pkg = require('../package.json');
+const cors = require('cors');
 
 // importamos rutas
 const authRouter = require('./routes/authentication.routes.js');
@@ -25,6 +26,8 @@ app.set('port', process.env.PORT || 3001);
 app.use(express.urlencoded({ extended: false }));
 
 app.use(express.json());
+
+app.use(cors());
 
 // rutas
 app.get('/', (request, response) => {
