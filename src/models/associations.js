@@ -59,7 +59,7 @@ Request.belongsTo(Status, {
 
 Device.hasMany(Request, {
 	foreignKey: {
-		name: 'serial_id',
+		name: 'device_id',
 		allowNull: false,
 		onDelete: 'RESTRICT',
 		onUpdate: 'RESTRICT',
@@ -68,7 +68,7 @@ Device.hasMany(Request, {
 
 Request.belongsTo(Device, {
 	foreignKey: {
-		name: 'serial_id',
+		name: 'device_id',
 		allowNull: false,
 		onDelete: 'RESTRICT',
 		onUpdate: 'RESTRICT',

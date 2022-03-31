@@ -12,6 +12,7 @@ const authRouter = require('./routes/authentication.routes.js');
 const usersRouter = require('./routes/users.routes.js');
 const requestsRouter = require('./routes/requests.routes.js');
 const reportsRouter = require('./routes/reports.routes.js');
+const devicesRouter = require('./routes/devices.routes.js');
 
 // importamos middlewares
 const notFound = require('./middlewares/notFound.js');
@@ -47,6 +48,8 @@ app.use('/api/users', usersRouter);
 app.use('/api/requests', requestsRouter);
 
 app.use('/api/reports', reportsRouter);
+
+app.use('/api/devices', devicesRouter);
 
 // ruta no encontrada
 app.use(notFound);

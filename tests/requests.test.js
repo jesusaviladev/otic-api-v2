@@ -92,7 +92,7 @@ describe('endpoints de solicitudes', () => {
 			expect(response.body.request.id).toBe(3)
 			expect(response.body.request.description)
 			.toBe('No tiene RAM')
-			expect(response.body.request.serial_id).toBe('BN157333')
+			expect(response.body.request.device_id).toBe(1)
 			expect(response.body.request.user_id).toBe(3)
 		})
 
@@ -124,6 +124,7 @@ describe('endpoints de solicitudes', () => {
 			description: 'Equipo no tiene pantalla',
 			user_id: 3,
 			device: {
+				id: 2,
 				exists: true,
 				serial: 'BN157784',
 				type: 'Escritorio',
@@ -135,7 +136,7 @@ describe('endpoints de solicitudes', () => {
 			const solicitudes = await Request.findAll();
 
 			expect(solicitudes).toHaveLength(7)
-			expect(response.body.request.serial_id).toBe('BN157784')
+			expect(response.body.request.device_id).toBe(2)
 			expect(response.body.request.user_id).toBe("3")
 		})
 
@@ -159,7 +160,7 @@ describe('endpoints de solicitudes', () => {
 			const equipos = await Device.findAll()
 
 			expect(solicitudes).toHaveLength(8)
-			expect(response.body.request.request.serial_id).toBe('BN147588')
+			expect(response.body.request.request.device_id).toBe(3)
 			expect(response.body.request.request.description).toBe('Tarjeta de red dañada')
 			expect(equipos).toHaveLength(3)
 			expect(response.body.request.request.user_id).toBe("2")
@@ -251,7 +252,7 @@ describe('endpoints de solicitudes', () => {
 				.send({
 					description: 'Debe arreglarse el mouse editado',
 					user_id: 3,
-					serial_id: 'JKFR8989',
+					device_id: 2,
 				})
 				.expect(200)
 
@@ -260,7 +261,7 @@ describe('endpoints de solicitudes', () => {
 				expect(solicitud.description).toBe('Debe arreglarse el mouse editado')
 				expect(solicitud.user_id).toBe(3)
 				expect(solicitud.status_id).toBe(2)
-				expect(solicitud.serial_id).toBe('BN157333')
+				expect(solicitud.device_id).toBe(1)
 
 			})
 
@@ -272,7 +273,7 @@ describe('endpoints de solicitudes', () => {
 					description: 'Debe arreglarse el mouse editado 456465',
 					user_id: 456,
 					status: 78,
-					serial_id: 'JKFR8989',
+					device_id: 'JKFR8989',
 				})
 				.expect(400)
 
@@ -281,7 +282,7 @@ describe('endpoints de solicitudes', () => {
 				expect(solicitud.description).toBe('Debe arreglarse el mouse editado')
 				expect(solicitud.user_id).toBe(3)
 				expect(solicitud.status_id).toBe(2)
-				expect(solicitud.serial_id).toBe('BN157333')
+				expect(solicitud.device_id).toBe(1)
 			})
 
 			test('no debe poder editar si el usuario no es admin', async () =>{
@@ -298,7 +299,7 @@ describe('endpoints de solicitudes', () => {
 				expect(solicitud.description).toBe('Pantalla dañada')
 				expect(solicitud.user_id).toBe(4)
 				expect(solicitud.status_id).toBe(2)
-				expect(solicitud.serial_id).toBe('BN157333')
+				expect(solicitud.device_id).toBe(1)
 			})
 	})
 

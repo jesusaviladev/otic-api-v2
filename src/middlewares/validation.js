@@ -225,20 +225,42 @@ const validateRequest = [
 		.custom(async (value, { req }) => {
 			if (value === true) {
 				const device = await Device.findOne({
-					where: { serial: req.body.device.serial },
+					where: { id: req.body.device.id },
 				});
 
 				if (!device) {
 					return Promise.reject('Invalid ID, device does not exists');
 				}
 			}
+
+			else {
+				const device = await Device.findOne({
+					where: { serial: req.body.device.serial },
+				});
+
+				if (device) {
+					return Promise.reject('Device already exists');
+				}
+			}
 		}),
+	check('device.id', 'Must be a valid id')
+		.if((value, { req }) => req.body.device.exists === true)
+		.exists()
+		.notEmpty(),
 	check('device.serial', 'Must be a valid serial id')
+		.if((value, { req }) => req.body.device.exists === false)
 		.exists()
 		.notEmpty()
 		.isString()
 		.trim(),
 	check('device.type', 'Must be a valid string')
+		.if((value, { req }) => req.body.device.exists === false)
+		.exists()
+		.notEmpty()
+		.isString()
+		.trim(),
+	check('device.name', 'Must be a valid string')
+		.if((value, { req }) => req.body.device.exists === false)
 		.exists()
 		.notEmpty()
 		.isString()
@@ -325,6 +347,36 @@ const validateEditedReport = [
 	},
 ];
 
+const validateEditedDevice = [
+	check('serial', 'Must be a valid serial id')
+		.optional()
+		.notEmpty()
+		.isString()
+		.trim(),
+	check('type', 'Must be a valid string')
+		.optional()
+		.notEmpty()
+		.isString()
+		.trim(),
+	check('name', 'Must be a valid string')
+		.optional()
+		.notEmpty()
+		.isString()
+		.trim(),
+		(request, response, next) => {
+		const errors = validationResult(request);
+		if (!errors.isEmpty()) {
+			return response.status(400).json({ errors: errors.array() });
+		}
+
+		const matched = matchedData(request);
+
+		request.body = matched;
+
+		next();
+	},
+]
+
 module.exports = {
 	validateUser,
 	validateEditedUser,
@@ -334,4 +386,5 @@ module.exports = {
 	validateEditedRequest,
 	validateReport,
 	validateEditedReport,
+	validateEditedDevice
 };
