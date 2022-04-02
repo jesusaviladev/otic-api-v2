@@ -4,7 +4,7 @@ const Device = require('../models/device.model.js');
 const Request = require('../models/requests.model.js');
 
 const validateUser = [
-	check('username', 'Must enter a valid username')
+	check('username', 'Ingrese un nombre de usuario válido')
 		.exists()
 		.notEmpty()
 		.isString()
@@ -13,16 +13,16 @@ const validateUser = [
 		.escape()
 		.custom(async (value) => {
 			if (await fieldExists('username', value)) {
-				return Promise.reject('Username already registered');
+				return Promise.reject('Este nombre de usuario ya está registrado');
 			}
 		}),
-	check('password', 'Must enter a valid password')
+	check('password', 'Ingrese una contraseña válida')
 		.exists()
 		.notEmpty()
 		.isString()
 		.isLength({ min: 6 })
 		.trim(),
-	check('name', 'Must enter a valid name')
+	check('name', 'Ingrese un nombre válido')
 		.exists()
 		.notEmpty()
 		.isString()
@@ -30,7 +30,7 @@ const validateUser = [
 		.toLowerCase()
 		.trim()
 		.escape(),
-	check('surname', 'Must enter a valid name')
+	check('surname', 'Ingrese un apellido válido')
 		.exists()
 		.notEmpty()
 		.isString()
@@ -38,33 +38,33 @@ const validateUser = [
 		.toLowerCase()
 		.trim()
 		.escape(),
-	check('ci', 'Must enter a valid document')
+	check('ci', 'Ingrese un documento válido')
 		.exists()
 		.notEmpty()
 		.isString()
 		.trim()
-		.matches(/([V,E]-[0-9]{5,9})/g)
+		.matches(/([V,E]-[0-9]{5,9})/)
 		.custom(async (value) => {
 			if (await fieldExists('ci', value)) {
-				return Promise.reject('Document already exists');
+				return Promise.reject('Este documento de identidad ya está registrado');
 			}
 		}),
-	check('telephone', 'Must enter a valid telephone number')
+	check('telephone', 'Ingrese un número telefónico válido')
 		.exists()
 		.notEmpty()
 		.isString()
 		.trim(),
-	check('email', 'Must enter a valid email')
+	check('email', 'Ingrese un correo electrónico válido')
 		.exists()
 		.notEmpty()
 		.isEmail()
 		.trim()
 		.custom(async (value) => {
 			if (await fieldExists('email', value)) {
-				return Promise.reject('Email already exists');
+				return Promise.reject('Este correo electrónico ya está registrado');
 			}
 		}),
-	check('role', 'Must enter an user role')
+	check('role', 'Ingrese el rol del usuario')
 		.exists()
 		.notEmpty()
 		.isNumeric()
@@ -85,7 +85,7 @@ const validateUser = [
 ];
 
 const validateEditedUser = [
-	check('username', 'Must enter a valid username')
+	check('username', 'Ingrese un nombre de usuario válido')
 		.optional()
 		.notEmpty()
 		.isString()
@@ -124,7 +124,7 @@ const validateEditedUser = [
 		.notEmpty()
 		.isString()
 		.trim()
-		.matches(/([V,E]-[0-9]{5,9})/g)
+		.matches(/([V,E]-[0-9]{5,9})/)
 		.custom(async (value) => {
 			if (await fieldExists('ci', value)) {
 				return Promise.reject('Document already exists');
@@ -190,7 +190,7 @@ const validateLogin = [
 		const errors = validationResult(request);
 		if (!errors.isEmpty()) {
 			return response.status(400).json({
-				error: 'Must submit a valid username and password',
+				error: 'Ingrese un usuario y contraseña válidos',
 			});
 		}
 
@@ -225,20 +225,40 @@ const validateRequest = [
 		.custom(async (value, { req }) => {
 			if (value === true) {
 				const device = await Device.findOne({
-					where: { serial: req.body.device.serial },
+					where: { id: req.body.device.id },
 				});
 
 				if (!device) {
 					return Promise.reject('Invalid ID, device does not exists');
 				}
+			} else {
+				const device = await Device.findOne({
+					where: { serial: req.body.device.serial },
+				});
+
+				if (device) {
+					return Promise.reject('Device already exists');
+				}
 			}
 		}),
+	check('device.id', 'Must be a valid id')
+		.if((value, { req }) => req.body.device.exists === true)
+		.exists()
+		.notEmpty(),
 	check('device.serial', 'Must be a valid serial id')
+		.if((value, { req }) => req.body.device.exists === false)
 		.exists()
 		.notEmpty()
 		.isString()
 		.trim(),
 	check('device.type', 'Must be a valid string')
+		.if((value, { req }) => req.body.device.exists === false)
+		.exists()
+		.notEmpty()
+		.isString()
+		.trim(),
+	check('device.name', 'Must be a valid string')
+		.if((value, { req }) => req.body.device.exists === false)
 		.exists()
 		.notEmpty()
 		.isString()
@@ -325,6 +345,36 @@ const validateEditedReport = [
 	},
 ];
 
+const validateEditedDevice = [
+	check('serial', 'Must be a valid serial id')
+		.optional()
+		.notEmpty()
+		.isString()
+		.trim(),
+	check('type', 'Must be a valid string')
+		.optional()
+		.notEmpty()
+		.isString()
+		.trim(),
+	check('name', 'Must be a valid string')
+		.optional()
+		.notEmpty()
+		.isString()
+		.trim(),
+	(request, response, next) => {
+		const errors = validationResult(request);
+		if (!errors.isEmpty()) {
+			return response.status(400).json({ errors: errors.array() });
+		}
+
+		const matched = matchedData(request);
+
+		request.body = matched;
+
+		next();
+	},
+];
+
 module.exports = {
 	validateUser,
 	validateEditedUser,
@@ -334,4 +384,5 @@ module.exports = {
 	validateEditedRequest,
 	validateReport,
 	validateEditedReport,
+	validateEditedDevice,
 };

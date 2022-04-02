@@ -50,7 +50,7 @@ const addRequest = async (data) => {
 					description,
 					user_id,
 					status_id: status,
-					serial_id: createdDevice.serial,
+					device_id: createdDevice.id,
 				},
 				{
 					transaction: t,
@@ -73,7 +73,7 @@ const addRequest = async (data) => {
 			description,
 			user_id,
 			status_id: status,
-			serial_id: device.serial,
+			device_id: device.id,
 		});
 
 		return createdRequest;

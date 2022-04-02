@@ -8,14 +8,17 @@ authController.login = async (request, response, next) => {
 	const { username, password } = request.body;
 
 	try {
-		const user = await User.findOne({ where: { username: username }, include: Role });
+		const user = await User.findOne({
+			where: { username: username },
+			include: Role,
+		});
 
 		const passwordMatch =
 			user === null ? false : await checkPassword(password, user.password);
 
 		if (!user || !passwordMatch) {
 			return response.status(400).json({
-				error: 'Username or password are invalid',
+				error: 'El usuario o contraseña son incorrectos',
 			});
 		} else {
 			const signedUser = {
