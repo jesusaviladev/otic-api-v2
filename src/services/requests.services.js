@@ -24,7 +24,7 @@ const findRequestById = async (id) => {
 
 const addRequest = async (data) => {
 	const { description, device, user_id = null } = data;
-	console.log(data)
+
 	const status = user_id ? 2 : 1;
 
 	if (!device.exists) {
