@@ -14,6 +14,10 @@ const findUsers = async (cursor, limit) => {
 		},
 		limit: limit + 1,
 		attributes: { exclude: ['password'] },
+		include: {
+			model: Role,
+			attributes: ['name'],
+		},
 	});
 
 	return users;

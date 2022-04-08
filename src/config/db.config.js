@@ -3,13 +3,13 @@ const database =
 		? process.env.DB_NAME_TEST
 		: process.env.DB_NAME;
 
-const options = {}
+const options = {};
 
-if (process.env.DB_ENGINE === 'postgres'){
+if (process.env.DB_ENGINE === 'postgres') {
 	options.ssl = {
-        require: true,
-        rejectUnauthorized: false
-    }
+		require: true,
+		rejectUnauthorized: false,
+	};
 }
 
 const config = {
@@ -18,7 +18,7 @@ const config = {
 	dbPassword: process.env.DB_PASSWORD,
 	host: process.env.DB_HOST,
 	DBEngine: process.env.DB_ENGINE,
-	options
+	options,
 };
 
 module.exports = config;

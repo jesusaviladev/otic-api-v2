@@ -210,6 +210,7 @@ const validateRequest = [
 		.escape(),
 	check('user_id', 'Must be a valid id')
 		.optional()
+		.if((value) => value !== null)
 		.notEmpty()
 		.trim()
 		.custom(async (value) => {
@@ -225,7 +226,7 @@ const validateRequest = [
 		.custom(async (value, { req }) => {
 			if (value === true) {
 				const device = await Device.findOne({
-					where: { id: req.body.device.id },
+					where: { serial: req.body.device.serial },
 				});
 
 				if (!device) {
@@ -241,12 +242,7 @@ const validateRequest = [
 				}
 			}
 		}),
-	check('device.id', 'Must be a valid id')
-		.if((value, { req }) => req.body.device.exists === true)
-		.exists()
-		.notEmpty(),
 	check('device.serial', 'Must be a valid serial id')
-		.if((value, { req }) => req.body.device.exists === false)
 		.exists()
 		.notEmpty()
 		.isString()

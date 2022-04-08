@@ -124,14 +124,11 @@ describe('endpoints de solicitudes', () => {
 			description: 'Equipo no tiene pantalla',
 			user_id: 3,
 			device: {
-				id: 2,
 				exists: true,
-				serial: 'BN157784',
-				type: 'Escritorio',
-				name: 'PC-VIT'
+				serial: 'BN157784'
 			}
 			})
-			.expect(200)
+			.expect(201)
 
 			const solicitudes = await Request.findAll();
 
@@ -154,7 +151,7 @@ describe('endpoints de solicitudes', () => {
 					name: 'PC-VIT 38'
 				}
 			})
-			.expect(200)
+			.expect(201)
 
 			const solicitudes = await Request.findAll();
 			const equipos = await Device.findAll()
@@ -193,9 +190,7 @@ describe('endpoints de solicitudes', () => {
 				user_id: 2,
 				device: {
 					exists: true,
-					serial: 'JKFR8989', //serial que no existe en la BD
-					type: 'Escritorio',
-					name: 'PC-VIT 38'
+					serial: 'JKFR8989' //serial que no existe en la BD
 				}
 			})
 			.expect(400)
@@ -219,7 +214,7 @@ describe('endpoints de solicitudes', () => {
 				name: 'PC-VIT-2'
 			}
 			})
-			.expect(200)
+			.expect(201)
 			
 			const solicitud = await Request.findOne({ where: { id: 9 }})
 
@@ -234,9 +229,7 @@ describe('endpoints de solicitudes', () => {
 			user_id: 2,
 			device: {
 				exists: true,
-				serial: 'BN154587',
-				type: 'Escritorio',
-				name: 'PC-VIT-2'
+				serial: 'BN154587'
 			}
 			})
 			.expect(401)

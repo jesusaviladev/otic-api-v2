@@ -1,5 +1,7 @@
 const Device = require('../models/device.model.js');
 const Request = require('../models/requests.model.js');
+const User = require('../models/users.model.js');
+const Status = require('../models/status.model.js');
 const { Op } = require('sequelize');
 const { db } = require('../services/connection.js');
 
@@ -11,6 +13,16 @@ const findRequests = async (cursor, limit) => {
 			},
 		},
 		limit: limit + 1,
+		include: [
+			{
+				model: User,
+				attributes: ['username'],
+			},
+			{
+				model: Status,
+				attributes: ['description'],
+			},
+		],
 	});
 
 	return requests;
@@ -68,12 +80,18 @@ const addRequest = async (data) => {
 			throw new Error(error);
 		}
 	} else {
-		const createdRequest = Request.create({
+		const existingDevice = await Device.findOne({
+			where: {
+				serial: device.serial,
+			},
+		});
+
+		const createdRequest = await Request.create({
 			date: new Date().toISOString(),
 			description,
 			user_id,
 			status_id: status,
-			device_id: device.id,
+			device_id: existingDevice.id,
 		});
 
 		return createdRequest;
