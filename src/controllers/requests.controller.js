@@ -73,20 +73,28 @@ requestsController.createRequest = async (req, res, next) => {
 	}
 };
 
-requestsController.editRequest = async (request, response, next) => {
-	const { id } = request.params;
+requestsController.editRequest = async (req, res, next) => {
+	const { id } = req.params;
 
-	const data = request.body;
+	const data = req.body;
+
+	const request = await findRequestById(id);
+
+	if(data.user_id && parseInt(data.user_id) !== request.user_id && request.status_id === 3){
+		return res.status(400).json({
+			error: 'No puede cambiar el usuario de una solicitud completada.'
+		})
+	}
 
 	try {
 		const [editedRequest] = await editRequest(id, data);
 
 		if (editedRequest === 0)
-			return response.status(404).json({
+			return res.status(404).json({
 				status: 'Request not found',
 			});
 
-		return response.status(200).json({
+		return res.status(200).json({
 			message: 'Successfully edited request',
 		});
 	} catch (error) {

@@ -99,9 +99,12 @@ const addRequest = async (data) => {
 };
 
 const editRequest = async (id, data) => {
+
 	const { user_id } = data;
 
-	if (user_id) {
+	const request = await Request.findOne({ where: { id: id }})
+
+	if (user_id && request.status_id !== 3) {
 		data.status_id = 2;
 	}
 
