@@ -277,7 +277,7 @@ const validateEditedRequest = [
 	check('description').optional().notEmpty().isString().trim().escape(),
 	check('user_id', 'Must be a valid id')
 		.optional()
-		.notEmpty()
+		.if((value) => value !== null)
 		.trim()
 		.custom(async (value) => {
 			if (!(await fieldExists('id', value))) {

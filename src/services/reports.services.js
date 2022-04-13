@@ -1,5 +1,6 @@
 const Report = require('../models/reports.model.js');
 const Request = require('../models/requests.model.js');
+const User = require('../models/users.model.js');
 const { db } = require('../services/connection.js');
 const { Op } = require('sequelize');
 
@@ -9,6 +10,10 @@ const findReports = async (cursor, limit) => {
 			id: {
 				[Op.gt]: cursor,
 			},
+		},
+		include: {
+			model: User,
+			attributes: ['username']
 		},
 		limit: limit + 1,
 	});

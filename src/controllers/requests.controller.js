@@ -86,6 +86,12 @@ requestsController.editRequest = async (req, res, next) => {
 		})
 	}
 
+	if(data.user_id === null && request.status_id === 3){
+		return res.status(400).json({
+			error: 'No puede cambiar el usuario de una solicitud completada.'
+		})
+	}
+
 	try {
 		const [editedRequest] = await editRequest(id, data);
 

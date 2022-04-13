@@ -108,6 +108,10 @@ const editRequest = async (id, data) => {
 		data.status_id = 2;
 	}
 
+	if(user_id === null && request.status_id !== 3){
+		data.status_id = 1;
+	}
+
 	const editedRequest = await Request.update(data, {
 		where: { id: id },
 	});
