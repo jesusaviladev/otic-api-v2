@@ -134,7 +134,7 @@ describe('endpoints de solicitudes', () => {
 
 			expect(solicitudes).toHaveLength(7)
 			expect(response.body.request.device_id).toBe(2)
-			expect(response.body.request.user_id).toBe("3")
+			expect(response.body.request.user_id).toBe(3)
 		})
 
 		test('debe poder ingresar una solicitud de un equipo que no existe', async () => {
@@ -157,10 +157,10 @@ describe('endpoints de solicitudes', () => {
 			const equipos = await Device.findAll()
 
 			expect(solicitudes).toHaveLength(8)
-			expect(response.body.request.request.device_id).toBe(3)
-			expect(response.body.request.request.description).toBe('Tarjeta de red dañada')
+			expect(response.body.request.device_id).toBe(3)
+			expect(response.body.request.description).toBe('Tarjeta de red dañada')
 			expect(equipos).toHaveLength(3)
-			expect(response.body.request.request.user_id).toBe("2")
+			expect(response.body.request.user_id).toBe(2)
 		})
 
 		test('no debe permitir ingresar una solicitud con datos erroneos', async () => {

@@ -19,7 +19,7 @@ requestsController.getRequests = async (request, response, next) => {
 
 		return response.status(200).json({
 			requests: data,
-			pagination,
+			page: pagination,
 		});
 	} catch (error) {
 		next(error);
@@ -63,10 +63,13 @@ requestsController.createRequest = async (req, res, next) => {
 			data.user_id = null;
 		}
 
-		const request = await addRequest(data);
+		const createdRequest = await addRequest(data);
+
+		const request = await findRequestById(createdRequest.request.id);
 
 		return res.status(201).json({
-			request,
+			request: request,
+			device: createdRequest.device || null
 		});
 	} catch (error) {
 		next(error);

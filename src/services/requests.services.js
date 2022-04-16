@@ -29,7 +29,18 @@ const findRequests = async (cursor, limit) => {
 };
 
 const findRequestById = async (id) => {
-	const request = await Request.findOne({ where: { id: id } });
+	const request = await Request.findOne({ 
+		where: { id: id }, 
+		include: [
+			{
+				model: User,
+				attributes: ['username'],
+			},
+			{
+				model: Status,
+				attributes: ['description'],
+			},
+		], });
 
 	return request;
 };
@@ -94,7 +105,9 @@ const addRequest = async (data) => {
 			device_id: existingDevice.id,
 		});
 
-		return createdRequest;
+		return {
+			request: createdRequest
+		}
 	}
 };
 
