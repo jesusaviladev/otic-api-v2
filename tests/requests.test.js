@@ -60,8 +60,8 @@ describe('endpoints de solicitudes', () => {
 				.expect('Content-type', /application\/json/);
 
 			expect(response.body.requests).toHaveLength(2)
-			expect(response.body.pagination).toBeDefined()
-			expect(response.body.pagination.next).toBeDefined()	
+			expect(response.body.page).toBeDefined()
+			expect(response.body.page.next).toBeDefined()	
 		})
 
 		test('no debe devolver nada si no se envia un token', async () => {
