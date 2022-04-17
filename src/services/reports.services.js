@@ -13,7 +13,7 @@ const findReports = async (cursor, limit) => {
 		},
 		include: {
 			model: User,
-			attributes: ['username']
+			attributes: ['username'],
 		},
 		limit: limit + 1,
 	});

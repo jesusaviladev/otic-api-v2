@@ -2,11 +2,10 @@ const Device = require('../models/device.model.js');
 const Request = require('../models/requests.model.js');
 const User = require('../models/users.model.js');
 const Status = require('../models/status.model.js');
-const { Op } = require('sequelize');
 const { db } = require('../services/connection.js');
 
 const findRequests = async (page, limit) => {
-	const requests = await Request.findAll({
+	const requests = await Request.findAndCountAll({
 		offset: (page - 1) * limit,
 		limit: limit,
 		include: [
@@ -25,8 +24,8 @@ const findRequests = async (page, limit) => {
 };
 
 const findRequestById = async (id) => {
-	const request = await Request.findOne({ 
-		where: { id: id }, 
+	const request = await Request.findOne({
+		where: { id: id },
 		include: [
 			{
 				model: User,
@@ -36,7 +35,8 @@ const findRequestById = async (id) => {
 				model: Status,
 				attributes: ['description'],
 			},
-		], });
+		],
+	});
 
 	return request;
 };
@@ -102,22 +102,21 @@ const addRequest = async (data) => {
 		});
 
 		return {
-			request: createdRequest
-		}
+			request: createdRequest,
+		};
 	}
 };
 
 const editRequest = async (id, data) => {
-
 	const { user_id } = data;
 
-	const request = await Request.findOne({ where: { id: id }})
+	const request = await Request.findOne({ where: { id: id } });
 
 	if (user_id && request.status_id !== 3) {
 		data.status_id = 2;
 	}
 
-	if(user_id === null && request.status_id !== 3){
+	if (user_id === null && request.status_id !== 3) {
 		data.status_id = 1;
 	}
 

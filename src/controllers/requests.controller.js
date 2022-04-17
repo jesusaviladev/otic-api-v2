@@ -15,11 +15,14 @@ requestsController.getRequests = async (req, res, next) => {
 		const requests = await findRequests(page, limit);
 
 		return res.status(200).json({
-			requests,
+			requests: requests.rows,
 			page: {
 				currentPage: page,
 				per_page: limit,
-				next: `http://localhost:3001/api/requests?page=${page + 1 }&limit=${limit}`
+				total: requests.count,
+				next: `http://localhost:3001/api/requests?page=${
+					page + 1
+				}&limit=${limit}`,
 			},
 		});
 	} catch (error) {
@@ -70,7 +73,7 @@ requestsController.createRequest = async (req, res, next) => {
 
 		return res.status(201).json({
 			request: request,
-			device: createdRequest.device || null
+			device: createdRequest.device || null,
 		});
 	} catch (error) {
 		next(error);
@@ -84,16 +87,20 @@ requestsController.editRequest = async (req, res, next) => {
 
 	const request = await findRequestById(id);
 
-	if(data.user_id && parseInt(data.user_id) !== request.user_id && request.status_id === 3){
+	if (
+		data.user_id &&
+		parseInt(data.user_id) !== request.user_id &&
+		request.status_id === 3
+	) {
 		return res.status(400).json({
-			error: 'No puede cambiar el usuario de una solicitud completada.'
-		})
+			error: 'No puede cambiar el usuario de una solicitud completada.',
+		});
 	}
 
-	if(data.user_id === null && request.status_id === 3){
+	if (data.user_id === null && request.status_id === 3) {
 		return res.status(400).json({
-			error: 'No puede cambiar el usuario de una solicitud completada.'
-		})
+			error: 'No puede cambiar el usuario de una solicitud completada.',
+		});
 	}
 
 	try {
