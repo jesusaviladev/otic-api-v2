@@ -164,6 +164,11 @@ const validatePagination = [
 		.isNumeric()
 		.trim()
 		.toInt(),
+	check('page', 'Invalid parameter in request')
+		.optional()
+		.isNumeric()
+		.trim()
+		.toInt(),
 	check('limit', 'Invalid parameter in request')
 		.optional()
 		.isNumeric()

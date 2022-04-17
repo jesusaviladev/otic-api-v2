@@ -1,5 +1,4 @@
 const requestsController = {};
-const getPagination = require('../utils/getPagination.js');
 const {
 	findRequests,
 	findRequestById,
@@ -9,17 +8,19 @@ const {
 } = require('../services/requests.services.js');
 const { findUserById } = require('../services/users.services.js');
 
-requestsController.getRequests = async (request, response, next) => {
-	const { since_id = 0, limit = 10 } = request.query;
+requestsController.getRequests = async (req, res, next) => {
+	const { page = 1, limit = 10 } = req.query;
 
 	try {
-		const requests = await findRequests(since_id, limit);
+		const requests = await findRequests(page, limit);
 
-		const { data, pagination } = getPagination(requests, limit, request);
-
-		return response.status(200).json({
-			requests: data,
-			page: pagination,
+		return res.status(200).json({
+			requests,
+			page: {
+				currentPage: page,
+				per_page: limit,
+				next: `http://localhost:3001/api/requests?page=${page + 1 }&limit=${limit}`
+			},
 		});
 	} catch (error) {
 		next(error);

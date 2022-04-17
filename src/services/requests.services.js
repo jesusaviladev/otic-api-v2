@@ -5,14 +5,10 @@ const Status = require('../models/status.model.js');
 const { Op } = require('sequelize');
 const { db } = require('../services/connection.js');
 
-const findRequests = async (cursor, limit) => {
+const findRequests = async (page, limit) => {
 	const requests = await Request.findAll({
-		where: {
-			id: {
-				[Op.gt]: cursor,
-			},
-		},
-		limit: limit + 1,
+		offset: (page - 1) * limit,
+		limit: limit,
 		include: [
 			{
 				model: User,
