@@ -1,14 +1,10 @@
 const { Op } = require('sequelize');
 const Device = require('../models/device.model.js');
 
-const findDevices = async (cursor, limit) => {
-	const devices = await Device.findAll({
-		where: {
-			id: {
-				[Op.gt]: cursor,
-			},
-		},
-		limit: limit + 1,
+const findDevices = async (page, limit) => {
+	const devices = await Device.findAndCountAll({
+		offset: (page - 1) * limit,
+		limit: limit,
 	});
 
 	return devices;
