@@ -2,6 +2,7 @@ const User = require('../models/users.model.js');
 const Request = require('../models/requests.model.js');
 const Report = require('../models/reports.model.js');
 const Role = require('../models/roles.model.js');
+const Status = require('../models/status.model.js');
 const { Op } = require('sequelize');
 const { hashPassword } = require('../utils/hashPassword');
 
@@ -75,7 +76,16 @@ const deleteUser = async (id) => {
 const findUserRequests = async (id) => {
 	const result = await User.findOne({
 		where: { id: id },
-		include: Request,
+		include: [
+			{
+				model: Request,
+				include: [
+					{
+						model: Status
+					}
+				]
+			}
+		],
 		attributes: { exclude: ['password'] },
 	});
 
