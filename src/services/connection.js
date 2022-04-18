@@ -5,11 +5,13 @@ const {
 	dbPassword,
 	host,
 	DBEngine,
+	options,
 } = require('../config/db.config.js');
 
 const db = new Sequelize(dbName, dbUser, dbPassword, {
 	host: host,
 	dialect: DBEngine,
+	dialectOptions: options,
 	logging: false, // activar o desactivar logging por consula de cada query
 });
 

@@ -4,21 +4,25 @@ const {
 	editDevice,
 	deleteDevice,
 } = require('../services/devices.services.js');
-const getPagination = require('../utils/getPagination.js');
 
 const devicesController = {};
 
 devicesController.getDevices = async (request, response, next) => {
-	const { since_id = 0, limit = 10 } = request.query;
+	const { page = 1, limit = 10 } = request.query;
 
 	try {
-		const devices = await findDevices(since_id, limit);
-
-		const { data, pagination } = getPagination(devices, limit, request);
+		const devices = await findDevices(page, limit);
 
 		return response.status(200).json({
-			devices: data,
-			pagination,
+			devices: devices.rows,
+			pagination: {
+				currentPage: page,
+				per_page: limit,
+				total: devices.count,
+				next: `http://localhost:3001/api/devices?page=${
+					page + 1
+				}&limit=${limit}`,
+			},
 		});
 	} catch (error) {
 		next(error);

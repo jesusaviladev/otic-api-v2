@@ -1,5 +1,4 @@
 const requestsController = {};
-const getPagination = require('../utils/getPagination.js');
 const {
 	findRequests,
 	findRequestById,
@@ -9,17 +8,22 @@ const {
 } = require('../services/requests.services.js');
 const { findUserById } = require('../services/users.services.js');
 
-requestsController.getRequests = async (request, response, next) => {
-	const { since_id = 0, limit = 10 } = request.query;
+requestsController.getRequests = async (req, res, next) => {
+	const { page = 1, limit = 10 } = req.query;
 
 	try {
-		const requests = await findRequests(since_id, limit);
+		const requests = await findRequests(page, limit);
 
-		const { data, pagination } = getPagination(requests, limit, request);
-
-		return response.status(200).json({
-			requests: data,
-			pagination,
+		return res.status(200).json({
+			requests: requests.rows,
+			page: {
+				currentPage: page,
+				per_page: limit,
+				total: requests.count,
+				next: `http://localhost:3001/api/requests?page=${
+					page + 1
+				}&limit=${limit}`,
+			},
 		});
 	} catch (error) {
 		next(error);
@@ -63,30 +67,51 @@ requestsController.createRequest = async (req, res, next) => {
 			data.user_id = null;
 		}
 
-		const request = await addRequest(data);
+		const createdRequest = await addRequest(data);
 
-		return res.status(200).json({
-			request,
+		const request = await findRequestById(createdRequest.request.id);
+
+		return res.status(201).json({
+			request: request,
+			device: createdRequest.device || null,
 		});
 	} catch (error) {
 		next(error);
 	}
 };
 
-requestsController.editRequest = async (request, response, next) => {
-	const { id } = request.params;
+requestsController.editRequest = async (req, res, next) => {
+	const { id } = req.params;
 
-	const data = request.body;
+	const data = req.body;
+
+	const request = await findRequestById(id);
+
+	if (
+		data.user_id &&
+		parseInt(data.user_id) !== request.user_id &&
+		request.status_id === 3
+	) {
+		return res.status(400).json({
+			error: 'No puede cambiar el usuario de una solicitud completada.',
+		});
+	}
+
+	if (data.user_id === null && request.status_id === 3) {
+		return res.status(400).json({
+			error: 'No puede cambiar el usuario de una solicitud completada.',
+		});
+	}
 
 	try {
 		const [editedRequest] = await editRequest(id, data);
 
 		if (editedRequest === 0)
-			return response.status(404).json({
+			return res.status(404).json({
 				status: 'Request not found',
 			});
 
-		return response.status(200).json({
+		return res.status(200).json({
 			message: 'Successfully edited request',
 		});
 	} catch (error) {

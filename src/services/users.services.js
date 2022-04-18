@@ -2,18 +2,19 @@ const User = require('../models/users.model.js');
 const Request = require('../models/requests.model.js');
 const Report = require('../models/reports.model.js');
 const Role = require('../models/roles.model.js');
+const Status = require('../models/status.model.js');
 const { Op } = require('sequelize');
 const { hashPassword } = require('../utils/hashPassword');
 
-const findUsers = async (cursor, limit) => {
-	const users = await User.findAll({
-		where: {
-			id: {
-				[Op.gt]: cursor,
-			},
-		},
-		limit: limit + 1,
+const findUsers = async (page, limit) => {
+	const users = await User.findAndCountAll({
+		offset: (page - 1) * limit,
+		limit: limit,
 		attributes: { exclude: ['password'] },
+		include: {
+			model: Role,
+			attributes: ['name'],
+		},
 	});
 
 	return users;
@@ -75,7 +76,16 @@ const deleteUser = async (id) => {
 const findUserRequests = async (id) => {
 	const result = await User.findOne({
 		where: { id: id },
-		include: Request,
+		include: [
+			{
+				model: Request,
+				include: [
+					{
+						model: Status
+					}
+				]
+			}
+		],
 		attributes: { exclude: ['password'] },
 	});
 

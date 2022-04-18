@@ -1,23 +1,42 @@
 const Device = require('../models/device.model.js');
 const Request = require('../models/requests.model.js');
-const { Op } = require('sequelize');
+const User = require('../models/users.model.js');
+const Status = require('../models/status.model.js');
 const { db } = require('../services/connection.js');
 
-const findRequests = async (cursor, limit) => {
-	const requests = await Request.findAll({
-		where: {
-			id: {
-				[Op.gt]: cursor,
+const findRequests = async (page, limit) => {
+	const requests = await Request.findAndCountAll({
+		offset: (page - 1) * limit,
+		limit: limit,
+		include: [
+			{
+				model: User,
+				attributes: ['username'],
 			},
-		},
-		limit: limit + 1,
+			{
+				model: Status,
+				attributes: ['description'],
+			},
+		],
 	});
 
 	return requests;
 };
 
 const findRequestById = async (id) => {
-	const request = await Request.findOne({ where: { id: id } });
+	const request = await Request.findOne({
+		where: { id: id },
+		include: [
+			{
+				model: User,
+				attributes: ['username'],
+			},
+			{
+				model: Status,
+				attributes: ['description'],
+			},
+		],
+	});
 
 	return request;
 };
@@ -68,23 +87,37 @@ const addRequest = async (data) => {
 			throw new Error(error);
 		}
 	} else {
-		const createdRequest = Request.create({
+		const existingDevice = await Device.findOne({
+			where: {
+				serial: device.serial,
+			},
+		});
+
+		const createdRequest = await Request.create({
 			date: new Date().toISOString(),
 			description,
 			user_id,
 			status_id: status,
-			device_id: device.id,
+			device_id: existingDevice.id,
 		});
 
-		return createdRequest;
+		return {
+			request: createdRequest,
+		};
 	}
 };
 
 const editRequest = async (id, data) => {
 	const { user_id } = data;
 
-	if (user_id) {
+	const request = await Request.findOne({ where: { id: id } });
+
+	if (user_id && request.status_id !== 3) {
 		data.status_id = 2;
+	}
+
+	if (user_id === null && request.status_id !== 3) {
+		data.status_id = 1;
 	}
 
 	const editedRequest = await Request.update(data, {

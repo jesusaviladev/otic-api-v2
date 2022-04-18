@@ -60,8 +60,8 @@ describe('endpoints de solicitudes', () => {
 				.expect('Content-type', /application\/json/);
 
 			expect(response.body.requests).toHaveLength(2)
-			expect(response.body.pagination).toBeDefined()
-			expect(response.body.pagination.next).toBeDefined()	
+			expect(response.body.page).toBeDefined()
+			expect(response.body.page.next).toBeDefined()	
 		})
 
 		test('no debe devolver nada si no se envia un token', async () => {
@@ -124,20 +124,17 @@ describe('endpoints de solicitudes', () => {
 			description: 'Equipo no tiene pantalla',
 			user_id: 3,
 			device: {
-				id: 2,
 				exists: true,
-				serial: 'BN157784',
-				type: 'Escritorio',
-				name: 'PC-VIT'
+				serial: 'BN157784'
 			}
 			})
-			.expect(200)
+			.expect(201)
 
 			const solicitudes = await Request.findAll();
 
 			expect(solicitudes).toHaveLength(7)
 			expect(response.body.request.device_id).toBe(2)
-			expect(response.body.request.user_id).toBe("3")
+			expect(response.body.request.user_id).toBe(3)
 		})
 
 		test('debe poder ingresar una solicitud de un equipo que no existe', async () => {
@@ -154,16 +151,16 @@ describe('endpoints de solicitudes', () => {
 					name: 'PC-VIT 38'
 				}
 			})
-			.expect(200)
+			.expect(201)
 
 			const solicitudes = await Request.findAll();
 			const equipos = await Device.findAll()
 
 			expect(solicitudes).toHaveLength(8)
-			expect(response.body.request.request.device_id).toBe(3)
-			expect(response.body.request.request.description).toBe('Tarjeta de red dañada')
+			expect(response.body.request.device_id).toBe(3)
+			expect(response.body.request.description).toBe('Tarjeta de red dañada')
 			expect(equipos).toHaveLength(3)
-			expect(response.body.request.request.user_id).toBe("2")
+			expect(response.body.request.user_id).toBe(2)
 		})
 
 		test('no debe permitir ingresar una solicitud con datos erroneos', async () => {
@@ -193,9 +190,7 @@ describe('endpoints de solicitudes', () => {
 				user_id: 2,
 				device: {
 					exists: true,
-					serial: 'JKFR8989', //serial que no existe en la BD
-					type: 'Escritorio',
-					name: 'PC-VIT 38'
+					serial: 'JKFR8989' //serial que no existe en la BD
 				}
 			})
 			.expect(400)
@@ -219,7 +214,7 @@ describe('endpoints de solicitudes', () => {
 				name: 'PC-VIT-2'
 			}
 			})
-			.expect(200)
+			.expect(201)
 			
 			const solicitud = await Request.findOne({ where: { id: 9 }})
 
@@ -234,9 +229,7 @@ describe('endpoints de solicitudes', () => {
 			user_id: 2,
 			device: {
 				exists: true,
-				serial: 'BN154587',
-				type: 'Escritorio',
-				name: 'PC-VIT-2'
+				serial: 'BN154587'
 			}
 			})
 			.expect(401)

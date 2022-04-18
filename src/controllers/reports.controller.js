@@ -67,6 +67,12 @@ reportsController.createReport = async (req, res, next) => {
 			});
 		}
 
+		if (request.status_id === 3) {
+			return res.status(400).json({
+				error: 'Request already closed',
+			});
+		}
+
 		if (!user) {
 			return res.status(400).json({
 				error: 'User does not exists',
