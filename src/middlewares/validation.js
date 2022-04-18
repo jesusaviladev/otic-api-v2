@@ -2,6 +2,7 @@ const { check, validationResult, matchedData } = require('express-validator');
 const { fieldExists } = require('../utils/fieldExists');
 const Device = require('../models/device.model.js');
 const Request = require('../models/requests.model.js');
+const User = require('../models/users.model.js');
 
 const validateUser = [
 	check('username', 'Ingrese un nombre de usuario válido')
@@ -92,18 +93,23 @@ const validateEditedUser = [
 		.isAlphanumeric()
 		.trim()
 		.escape()
-		.custom(async (value) => {
-			if (await fieldExists('username', value)) {
-				return Promise.reject('Username already registered');
+		.custom(async (value, { req }) => {
+
+			const { id } = req.params
+
+			const editedUser = await User.findOne({ where: { id: id }})
+
+			if (editedUser.username !== value && await fieldExists('username', value)) {
+				return Promise.reject('Este usuario ya está registrado');
 			}
 		}),
-	check('password', 'Must enter a valid password')
+	check('password', 'Debe ingresar una contraseña válida')
 		.optional()
 		.notEmpty()
 		.isString()
 		.isLength({ min: 6 })
 		.trim(),
-	check('name', 'Must enter a valid name')
+	check('name', 'Ingrese un nombre válido')
 		.optional()
 		.notEmpty()
 		.isString()
@@ -111,7 +117,7 @@ const validateEditedUser = [
 		.toLowerCase()
 		.trim()
 		.escape(),
-	check('surname', 'Must enter a valid name')
+	check('surname', 'Ingrese un apellido válido')
 		.optional()
 		.notEmpty()
 		.isString()
@@ -119,30 +125,40 @@ const validateEditedUser = [
 		.toLowerCase()
 		.trim()
 		.escape(),
-	check('ci', 'Must enter a valid document')
+	check('ci', 'Ingrese un número de cédula válido')
 		.optional()
 		.notEmpty()
 		.isString()
 		.trim()
 		.matches(/([V,E]-[0-9]{5,9})/)
-		.custom(async (value) => {
-			if (await fieldExists('ci', value)) {
-				return Promise.reject('Document already exists');
+		.custom(async (value, { req }) => {
+
+			const { id } = req.params
+
+			const editedUser = await User.findOne({ where: { id: id }})
+
+			if (editedUser.ci !== value && await fieldExists('ci', value)) {
+				return Promise.reject('Este documento de identidad ya está registrado');
 			}
 		}),
-	check('telephone', 'Must enter a valid telephone number')
+	check('telephone', 'Ingrese un número de teléfono válido')
 		.optional()
 		.notEmpty()
 		.isString()
 		.trim(),
-	check('email', 'Must enter a valid email')
+	check('email', 'Ingrese un correo electrónico válido')
 		.optional()
 		.notEmpty()
 		.isEmail()
 		.trim()
-		.custom(async (value) => {
-			if (await fieldExists('email', value)) {
-				return Promise.reject('Email already exists');
+		.custom(async (value, { req }) => {
+
+			const { id } = req.params
+
+			const editedUser = await User.findOne({ where: { id: id }})
+
+			if (editedUser.email !== value && await fieldExists('email', value)) {
+				return Promise.reject('Este correo electrónico ya ha sido registrado');
 			}
 		}),
 	(request, response, next) => {

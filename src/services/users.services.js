@@ -5,14 +5,10 @@ const Role = require('../models/roles.model.js');
 const { Op } = require('sequelize');
 const { hashPassword } = require('../utils/hashPassword');
 
-const findUsers = async (cursor, limit) => {
-	const users = await User.findAll({
-		where: {
-			id: {
-				[Op.gt]: cursor,
-			},
-		},
-		limit: limit + 1,
+const findUsers = async (page, limit) => {
+	const users = await User.findAndCountAll({
+		offset: (page - 1) * limit,
+		limit: limit,
 		attributes: { exclude: ['password'] },
 		include: {
 			model: Role,
