@@ -1,4 +1,3 @@
-const getPagination = require('../utils/getPagination.js');
 const reportsController = {};
 const {
 	findReports,
@@ -11,16 +10,21 @@ const { findUserById } = require('../services/users.services.js');
 const { findRequestById } = require('../services/requests.services.js');
 
 reportsController.getReports = async (request, response, next) => {
-	const { since_id = 0, limit = 10 } = request.query;
+	const { page = 1, limit = 10 } = request.query;
 
 	try {
-		const reports = await findReports(since_id, limit);
-
-		const { data, pagination } = getPagination(reports, limit, request);
+		const reports = await findReports(page, limit);
 
 		return response.status(200).json({
-			reports: data,
-			pagination,
+			reports: reports.rows,
+			pagination: {
+				currentPage: page,
+				per_page: limit,
+				total: reports.count,
+				next: `http://localhost:3001/api/devices?page=${
+					page + 1
+				}&limit=${limit}`,
+			}
 		});
 	} catch (error) {
 		next(error);
