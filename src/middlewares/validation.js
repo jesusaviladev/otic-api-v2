@@ -130,7 +130,7 @@ const validateEditedUser = [
 		.notEmpty()
 		.isString()
 		.trim()
-		.matches(/([V,E]-[0-9]{5,9})/)
+		.matches(/([V,E]-[0-9]{5,9})$/)
 		.custom(async (value, { req }) => {
 
 			const { id } = req.params
