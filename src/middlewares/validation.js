@@ -44,7 +44,7 @@ const validateUser = [
 		.notEmpty()
 		.isString()
 		.trim()
-		.matches(/([V,E]-[0-9]{5,9})/)
+		.matches(/([V,E]-[0-9]{5,9})$/)
 		.custom(async (value) => {
 			if (await fieldExists('ci', value)) {
 				return Promise.reject('Este documento de identidad ya está registrado');
