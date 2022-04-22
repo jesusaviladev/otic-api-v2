@@ -11,7 +11,7 @@ const findReports = async (page, limit) => {
 			model: User,
 			attributes: ['username'],
 		},
-		limit: limit + 1,
+		limit: limit,
 	});
 
 	return reports;

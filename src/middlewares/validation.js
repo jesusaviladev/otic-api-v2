@@ -384,7 +384,7 @@ const validateEditedDevice = [
 			return response.status(400).json({ errors: errors.array() });
 		}
 
-		const matched = matchedData(request);
+		const matched = matchedData(request, { locations: ['body'] });
 
 		request.body = matched;
 
