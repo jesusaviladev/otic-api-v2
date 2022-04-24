@@ -5,14 +5,26 @@ const {
 	addRequest,
 	editRequest,
 	deleteRequest,
+	requestModelAttributes
 } = require('../services/requests.services.js');
 const { findUserById } = require('../services/users.services.js');
 
 requestsController.getRequests = async (req, res, next) => {
-	const { page = 1, limit = 10 } = req.query;
+	const { page = 1, limit = 10, sortBy = 'id', orderBy = 'asc' } = req.query;
+
+	if(!requestModelAttributes.includes(sortBy)){
+		return res.status(400).json({
+			error: 'Invalid parameter in request'
+		})
+	}
 
 	try {
-		const requests = await findRequests(page, limit);
+		const requests = await findRequests({
+			page: page, 
+			limit: limit, 
+			sort: sortBy, 
+			order: orderBy
+		});
 
 		return res.status(200).json({
 			requests: requests.rows,

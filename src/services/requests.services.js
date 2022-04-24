@@ -4,7 +4,7 @@ const User = require('../models/users.model.js');
 const Status = require('../models/status.model.js');
 const { db } = require('../services/connection.js');
 
-const findRequests = async (page, limit) => {
+const findRequests = async ({ page, limit, sort, order }) => {
 	const requests = await Request.findAndCountAll({
 		offset: (page - 1) * limit,
 		limit: limit,
@@ -18,6 +18,7 @@ const findRequests = async (page, limit) => {
 				attributes: ['description'],
 			},
 		],
+		order: [[sort, order]]
 	});
 
 	return requests;
@@ -133,10 +134,13 @@ const deleteRequest = async (id) => {
 	return Boolean(deletedRequest);
 };
 
+const requestModelAttributes = Object.keys(Request.getAttributes())
+
 module.exports = {
 	findRequests,
 	findRequestById,
 	addRequest,
 	editRequest,
 	deleteRequest,
+	requestModelAttributes
 };
