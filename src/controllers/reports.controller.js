@@ -5,15 +5,28 @@ const {
 	addReport,
 	editReport,
 	deleteReport,
+	reportsModelAttributes
 } = require('../services/reports.services.js');
 const { findUserById } = require('../services/users.services.js');
 const { findRequestById } = require('../services/requests.services.js');
 
 reportsController.getReports = async (request, response, next) => {
-	const { page = 1, limit = 10 } = request.query;
+	const { page = 1, limit = 10, sortBy = 'id', orderBy = 'asc' } = request.query;
+
+	if (!reportsModelAttributes.includes(sortBy)){
+		return response.status(400).json({
+			error: 'Invalid parameter in request'
+		})
+	}
+
 
 	try {
-		const reports = await findReports(page, limit);
+		const reports = await findReports({
+			page: page,
+			limit: limit,
+			sort: sortBy,
+			order: orderBy
+		});
 
 		return response.status(200).json({
 			reports: reports.rows,

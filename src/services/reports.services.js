@@ -4,7 +4,7 @@ const User = require('../models/users.model.js');
 const { db } = require('../services/connection.js');
 const { Op } = require('sequelize');
 
-const findReports = async (page, limit) => {
+const findReports = async ({ page, limit, sort, order }) => {
 	const reports = await Report.findAndCountAll({
 		offset: (page - 1) * limit,
 		include: {
@@ -12,6 +12,7 @@ const findReports = async (page, limit) => {
 			attributes: ['username'],
 		},
 		limit: limit,
+		order: [[sort, order]]
 	});
 
 	return reports;
@@ -74,10 +75,13 @@ const deleteReport = async (id) => {
 	return deletedReport;
 };
 
+const reportsModelAttributes = Object.keys(Report.getAttributes())
+
 module.exports = {
 	findReports,
 	findReportById,
 	addReport,
 	editReport,
 	deleteReport,
+	reportsModelAttributes
 };
