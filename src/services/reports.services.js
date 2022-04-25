@@ -4,11 +4,15 @@ const User = require('../models/users.model.js');
 const { db } = require('../services/connection.js');
 const { Op } = require('sequelize');
 
-const findReports = async (page, limit) => {
+const findReports = async ({ page, limit, sort, order }) => {
 	const reports = await Report.findAndCountAll({
 		offset: (page - 1) * limit,
+		include: {
+			model: User,
+			attributes: ['username'],
+		},
 		limit: limit,
-		include: User
+		order: [[sort, order]]
 	});
 
 	return reports;
@@ -17,8 +21,12 @@ const findReports = async (page, limit) => {
 const findReportById = async (id) => {
 	const report = await Report.findOne({ 
 		where: { id: id },
-		include: User  
-});
+		include: {
+			model: User,
+			attributes: ['username'],
+		},
+
+		});
 
 	return report;
 };
@@ -67,10 +75,13 @@ const deleteReport = async (id) => {
 	return deletedReport;
 };
 
+const reportsModelAttributes = Object.keys(Report.getAttributes())
+
 module.exports = {
 	findReports,
 	findReportById,
 	addReport,
 	editReport,
 	deleteReport,
+	reportsModelAttributes
 };

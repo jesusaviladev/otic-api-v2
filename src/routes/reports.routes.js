@@ -10,10 +10,10 @@ const { verifyToken, checkAdmin } = require('../middlewares/auth.js');
 const {
 	validateReport,
 	validateEditedReport,
-	validatePagination,
+	validateParams,
 } = require('../middlewares/validation.js');
 
-reportsRouter.get('/', verifyToken, checkAdmin, validatePagination, getReports);
+reportsRouter.get('/', verifyToken, checkAdmin, validateParams, getReports);
 
 reportsRouter.get('/:id', verifyToken, getReportById);
 

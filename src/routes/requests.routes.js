@@ -9,7 +9,7 @@ const {
 const {
 	validateRequest,
 	validateEditedRequest,
-	validatePagination,
+	validateParams,
 } = require('../middlewares/validation.js');
 const { verifyToken, checkAdmin } = require('../middlewares/auth.js');
 
@@ -17,7 +17,7 @@ requestsRouter.get(
 	'/',
 	verifyToken,
 	checkAdmin,
-	validatePagination,
+	validateParams,
 	getRequests
 );
 

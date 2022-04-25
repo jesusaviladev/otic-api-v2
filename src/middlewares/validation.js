@@ -174,7 +174,7 @@ const validateEditedUser = [
 	},
 ];
 
-const validatePagination = [
+const validateParams = [
 	check('since_id', 'Invalid parameter in request')
 		.optional()
 		.isNumeric()
@@ -191,6 +191,18 @@ const validatePagination = [
 		.trim()
 		.matches(/^([1-9][0-9]?|100)$/)
 		.toInt(),
+	check('sortBy', 'Invalid parameter in request')
+		.optional()
+		.isString()
+		.toLowerCase()
+		.trim(),
+	check('orderBy', 'Invalid parameter in request')
+		.optional()
+		.isString()
+		.isAlpha()
+		.toLowerCase()
+		.trim()
+		.isIn(['asc', 'desc']),
 	(request, response, next) => {
 		const errors = validationResult(request);
 		if (!errors.isEmpty()) {
@@ -384,7 +396,7 @@ const validateEditedDevice = [
 			return response.status(400).json({ errors: errors.array() });
 		}
 
-		const matched = matchedData(request);
+		const matched = matchedData(request, { locations: ['body'] });
 
 		request.body = matched;
 
@@ -395,7 +407,7 @@ const validateEditedDevice = [
 module.exports = {
 	validateUser,
 	validateEditedUser,
-	validatePagination,
+	validateParams,
 	validateLogin,
 	validateRequest,
 	validateEditedRequest,

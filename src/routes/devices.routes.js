@@ -8,11 +8,11 @@ const {
 
 const { verifyToken, checkAdmin } = require('../middlewares/auth.js');
 const {
-	validatePagination,
+	validateParams,
 	validateEditedDevice,
 } = require('../middlewares/validation.js');
 
-devicesRouter.get('/', verifyToken, validatePagination, getDevices);
+devicesRouter.get('/', verifyToken, validateParams, getDevices);
 
 devicesRouter.get('/:serial', verifyToken, getDeviceBySerialId);
 

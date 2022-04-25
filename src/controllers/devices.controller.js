@@ -55,6 +55,7 @@ devicesController.editDevice = async (req, res, next) => {
 	const { serial } = req.params;
 
 	const data = req.body;
+	console.log(serial, data)
 
 	try {
 		const [editedDevice] = await editDevice(serial, data);

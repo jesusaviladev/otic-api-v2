@@ -4,7 +4,7 @@ const { verifyToken, checkAdmin } = require('../middlewares/auth.js');
 const {
 	validateUser,
 	validateEditedUser,
-	validatePagination,
+	validateParams,
 } = require('../middlewares/validation.js');
 
 const {
@@ -17,7 +17,7 @@ const {
 	getUserReports,
 } = usersController;
 
-usersRouter.get('/', verifyToken, checkAdmin, validatePagination, getUsers);
+usersRouter.get('/', verifyToken, checkAdmin, validateParams, getUsers);
 
 usersRouter.get('/:id', verifyToken, getUserById);
 
